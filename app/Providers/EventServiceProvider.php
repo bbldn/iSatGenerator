@@ -7,7 +7,7 @@ use Laravel\Lumen\Providers\EventServiceProvider as ServiceProvider;
 class EventServiceProvider extends ServiceProvider
 {
     /**
-     * @var array
+     * @var array $listen
      */
     protected $listen = [
         \App\Events\ExampleEvent::class => [
