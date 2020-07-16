@@ -14,7 +14,7 @@ use Illuminate\Support\Collection;
  * @property Product|null product
  * @property ProductDescription|null productDescription
  * @property ProductDiscontinued|null productDiscontinued
- * @property ProductDiscount|null productDiscount
+ * @property ProductDiscount[] productDiscounts
  * @method static Product|null find(integer $id)
  * @method static Collection all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
@@ -47,7 +47,7 @@ class ProductCategory extends Model
     /**
      * @return HasMany
      */
-    public function productDiscount(): HasMany
+    public function productDiscounts(): HasMany
     {
         return $this->hasMany(ProductDiscount::class, 'product_id', 'product_id');
     }

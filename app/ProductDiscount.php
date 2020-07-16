@@ -5,6 +5,7 @@ namespace App;
 use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
@@ -20,6 +21,7 @@ use Illuminate\Support\Collection;
  * @property Product|null product
  * @property ProductDescription|null productDescription
  * @property ProductDiscontinued|null productDiscontinued
+ * @property ProductCategory[] productCategories
  * @method static ProductDiscount|null find(integer $id)
  * @method static Collection all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
@@ -76,5 +78,13 @@ class ProductDiscount extends Model
     public function productDiscontinued(): HasOne
     {
         return $this->hasOne(ProductDiscontinued::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function productCategories(): HasMany
+    {
+        return $this->hasMany(ProductCategory::class, 'product_id', 'product_id');
     }
 }

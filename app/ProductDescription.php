@@ -18,8 +18,9 @@ use Illuminate\Support\Collection;
  * @property string meta_description
  * @property string meta_keyword
  * @property Product|null product
- * @property ProductDiscount|null productDiscount
+ * @property ProductDiscount[] productDiscounts
  * @property ProductDiscontinued|null productDiscontinued
+ * @property ProductCategory[] productCategories
  * @method static Product|null find(integer $id)
  * @method static Collection all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
@@ -63,8 +64,16 @@ class ProductDescription extends Model
     /**
      * @return HasMany
      */
-    public function productDiscount(): HasMany
+    public function productDiscounts(): HasMany
     {
         return $this->hasMany(ProductDiscount::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function productCategories(): HasMany
+    {
+        return $this->hasMany(ProductCategory::class, 'product_id', 'product_id');
     }
 }
