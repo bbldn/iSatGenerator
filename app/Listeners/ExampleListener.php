@@ -17,7 +17,7 @@ class ExampleListener
      * @param  ExampleEvent $event
      * @return void
      */
-    public function handle(ExampleEvent $event)
+    public function handle(ExampleEvent $event): void
     {
     }
 }

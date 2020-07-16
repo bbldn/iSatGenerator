@@ -15,7 +15,7 @@ use Throwable;
 class Handler extends ExceptionHandler
 {
     /**
-     * @var array
+     * @var string[] $dontReport
      */
     protected $dontReport = [
         AuthorizationException::class,
@@ -29,7 +29,7 @@ class Handler extends ExceptionHandler
      * @return void
      * @throws Exception
      */
-    public function report(Throwable $exception)
+    public function report(Throwable $exception): void
     {
         parent::report($exception);
     }
@@ -39,9 +39,9 @@ class Handler extends ExceptionHandler
      * @param  Throwable  $exception
      * @return Response
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function render($request, Throwable $exception)
+    public function render($request, Throwable $exception): Response
     {
         return parent::render($request, $exception);
     }

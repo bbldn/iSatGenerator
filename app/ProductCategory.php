@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
  * @property ProductDescription|null productDescription
  * @property ProductDiscontinued|null productDiscontinued
  * @property ProductDiscount[] productDiscounts
+ * @property Category|null category
  * @method static Product|null find(integer $id)
  * @method static Collection all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
@@ -66,5 +67,13 @@ class ProductCategory extends Model
     public function productDiscontinued(): HasOne
     {
         return $this->hasOne(ProductDiscontinued::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function category(): HasOne
+    {
+        return $this->hasOne(Category::class, 'category_id', 'category_id');
     }
 }
