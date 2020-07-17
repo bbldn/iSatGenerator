@@ -7,6 +7,7 @@ use App\Product;
 use App\ProductCategory;
 use App\ProductDiscontinued;
 use App\ProductDiscount;
+use App\SeoUrl;
 use Illuminate\Support\Collection;
 
 class ProductService extends Service
@@ -14,12 +15,16 @@ class ProductService extends Service
     /** @var array $productsDiscontinued */
     protected $productsDiscontinued = [];
 
+    /** @var array $seoUrls */
+    protected $seoUrls = [];
+
     /**
      * @return array
      */
     public function getData(): array
     {
         $this->loadProductsDiscontinued();
+        $this->loadSeoUrl();
         /** @var Collection|Category[] $mainCategories */
         $mainCategories = Category::where('parent_id', 0)->with('categoryDescription')->get();
         $result = [];
@@ -29,10 +34,17 @@ class ProductService extends Service
             $categories[] = $category;
             $subCategoriesIds = $this->getSubCategoriesByIds($this->getColumn($categories, 'category_id'));
 
+            $key = "category_id={$category->category_id}";
+            if (true === key_exists($key, $this->seoUrls)) {
+                $url = $this->seoUrls[$key];
+            } else {
+                $url = "/index.php?route=product/category&category_id={$category->category_id}";
+            }
+
             $result[] = [
                 'category_id' => $category->category_id,
                 'name' => $category->categoryDescription->name,
-                'url' => "/index.php?route=category_id={$category->category_id}",
+                'url' => $url,
                 'products' => $this->getProductsByIds($subCategoriesIds),
             ];
         }
@@ -46,13 +58,28 @@ class ProductService extends Service
      */
     protected function loadProductsDiscontinued(): void
     {
-        if (0 === count($this->productsDiscontinued)) {
+        if (count($this->productsDiscontinued) > 0) {
             return;
         }
 
-        foreach (ProductDiscontinued::all() as $value) {
-            /** @var ProductDiscontinued $value */
-            $this->productsDiscontinued[$value->product_id] = null;
+        foreach (ProductDiscontinued::all() as $productDiscontinued) {
+            /** @var ProductDiscontinued $productDiscontinued */
+            $this->productsDiscontinued[$productDiscontinued->product_id] = null;
+        }
+    }
+
+    /**
+     *
+     */
+    protected function loadSeoUrl(): void
+    {
+        if (count($this->seoUrls) > 0) {
+            return;
+        }
+
+        foreach (SeoUrl::all() as $seoUrl) {
+            /** @var SeoUrl $seoUrl */
+            $this->seoUrls[$seoUrl->query] = $seoUrl->keyword;
         }
     }
 
@@ -84,15 +111,26 @@ class ProductService extends Service
 
         $result = [];
         foreach ($products as $product) {
-            if (null === $product->productDescription || key_exists($product->product_id, $this->productsDiscontinued)) {
+            if (null === $product->productDescription) {
                 continue;
+            }
+
+            if (true === key_exists($product->product_id, $this->productsDiscontinued)) {
+                continue;
+            }
+
+            $key = "product_id={$product->product_id}";
+            if (true === key_exists($key, $this->seoUrls)) {
+                $url = $this->seoUrls[$key];
+            } else {
+                $url = "/index.php?route=product/product&product_id={$product->product_id}";
             }
 
             $item = [
                 'product_id' => $product->product_id,
                 'price' => round($product->price, 0),
                 'name' => $product->productDescription->name,
-                'url' => "/index.php?route=product_id={$product->product_id}",
+                'url' => $url,
             ];
 
             $result[] = array_merge($item, $this->getPriceByProductId($product->product_id));
