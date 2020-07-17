@@ -13,15 +13,12 @@ class GenerateJSONCommand extends Command
     /** @var string $description */
     protected $description = 'Generate JSON';
 
-    /** @var ProductService $productService */
-    protected $productService;
-
     /**
      * @param ProductService $productService
      */
     public function handle(ProductService $productService): void
     {
-        $this->productService = $productService;
-        var_dump($this->productService->getData());
+        $productService->init();
+        var_dump($productService->getData());
     }
 }

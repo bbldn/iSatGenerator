@@ -19,24 +19,38 @@ class ProductService extends Service
     protected $seoUrls = [];
 
     /**
+     *
+     */
+    public function init(): void
+    {
+        $this->loadProductsDiscontinued();
+        $this->loadSeoUrl();
+    }
+
+    /**
      * @return array
      */
     public function getData(): array
     {
-        $this->loadProductsDiscontinued();
-        $this->loadSeoUrl();
-        /** @var Collection|Category[] $mainCategories */
-        $mainCategories = Category::where('parent_id', 0)->with('categoryDescription')->get();
-        $result = [];
 
+        /** @var Collection|Category[] $mainCategories */
+        $mainCategories = Category::where('parent_id', 0)
+            ->where('status', true)
+            ->with('categoryDescription')
+            ->get();
+
+        $result = [];
         foreach ($mainCategories as $category) {
             $categories = Category::where('parent_id', $category->category_id)->get(['category_id']);
             $categories[] = $category;
-            $subCategoriesIds = $this->getSubCategoriesByIds($this->getColumn($categories, 'category_id'));
+
+            $categoriesIds = $this->getColumn($categories, 'category_id');
+            /* @noinspection PhpUndefinedMethodInspection */
+            $subCategoriesIds = ProductCategory::whereIn('category_id', $categoriesIds)->get();
 
             $key = "category_id={$category->category_id}";
             if (true === key_exists($key, $this->seoUrls)) {
-                $url = $this->seoUrls[$key];
+                $url = sprintf('/%s', $this->seoUrls[$key]);
             } else {
                 $url = "/index.php?route=product/category&category_id={$category->category_id}";
             }
@@ -45,7 +59,7 @@ class ProductService extends Service
                 'category_id' => $category->category_id,
                 'name' => $category->categoryDescription->name,
                 'url' => $url,
-                'products' => $this->getProductsByIds($subCategoriesIds),
+                'products' => $this->getProductsByProductsCategories($subCategoriesIds),
             ];
         }
 
@@ -84,45 +98,53 @@ class ProductService extends Service
     }
 
     /**
-     * @param array $productCategories
+     * @param Collection|ProductCategory[] $productCategories
      * @return array
      */
-    protected function getSubCategoriesByIds(array $productCategories): array
+    protected function getProductsByProductsCategories(Collection $productCategories): array
     {
-        /* @noinspection PhpUndefinedMethodInspection */
-        $productCategories = ProductCategory::whereIn('category_id', $productCategories)->get(['product_id']);
+        $mainCategories = [];
+        $productIds = [];
 
-        return $this->getColumn($productCategories, 'product_id');
-    }
+        foreach ($productCategories as $item) {
+            $productIds[] = $item->product_id;
+            if (true === $item->main_category) {
+                $mainCategories[$item->product_id] = $item->category_id;
+            }
+        }
 
-    /**
-     * @param array $ids
-     * @return array
-     */
-    protected function getProductsByIds(array $ids): array
-    {
-        /** @var Collection|Product[] $products */
         /* @noinspection PhpUndefinedMethodInspection */
-        $products = Product::whereIn('product_id', $ids)
+        $products = Product::whereIn('product_id', $this->getColumn($productCategories, 'product_id'))
             ->orderBy('sort_order')
             ->with('productDescription')
             ->where('price', '>', 0.0)
             ->get();
 
         $result = [];
+        /** @var Collection|Product[] $products */
         foreach ($products as $product) {
-            if (null === $product->productDescription) {
-                continue;
-            }
-
             if (true === key_exists($product->product_id, $this->productsDiscontinued)) {
                 continue;
             }
 
+            if (null === $product->productDescription) {
+                continue;
+            }
+
+            $url = null;
             $key = "product_id={$product->product_id}";
             if (true === key_exists($key, $this->seoUrls)) {
-                $url = $this->seoUrls[$key];
-            } else {
+                if (true === key_exists($product->product_id, $mainCategories)) {
+                    $query = 'category_id=' . $mainCategories[$product->product_id];
+
+                    if (true === key_exists($query, $this->seoUrls)) {
+                        $categoryUrl = $this->seoUrls[$query];
+                        $url = sprintf('/%s/%s', $categoryUrl, $this->seoUrls[$key]);
+                    }
+                }
+            }
+
+            if (null === $url) {
                 $url = "/index.php?route=product/product&product_id={$product->product_id}";
             }
 
@@ -169,11 +191,11 @@ class ProductService extends Service
     }
 
     /**
-     * @param object $array $array
+     * @param Collection $array
      * @param string $column
      * @return array
      */
-    protected function getColumn(object $array, string $column): array
+    protected function getColumn(Collection $array, string $column): array
     {
         $result = [];
         foreach ($array as $value) {

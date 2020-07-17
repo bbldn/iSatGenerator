@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 /**
  * @property integer product_id
  * @property integer category_id
+ * @property bool main_category
  * @property Product|null product
  * @property ProductDescription|null productDescription
  * @property ProductDiscontinued|null productDiscontinued
@@ -25,7 +26,12 @@ class ProductCategory extends Model
 {
     /** @var string[] $fillable */
     protected $fillable = [
-        'category_id',
+        'category_id', 'main_category',
+    ];
+
+    /** @var array $casts */
+    protected $casts = [
+        'main_category' => 'bool',
     ];
 
     /** @var bool $timestamps */
