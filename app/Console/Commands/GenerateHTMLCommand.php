@@ -2,24 +2,20 @@
 
 namespace App\Console\Commands;
 
-use App\Helper\JSONGenerator;
+use App\Helper\HTMLGenerator;
 use App\Helper\Store;
 use App\Services\ProductService;
 use Illuminate\Console\Command;
 
-class GenerateJSONCommand extends Command
+class GenerateHTMLCommand extends Command
 {
     /** @var string $signature */
-    protected $signature = 'generate:json';
+    protected $signature = 'generate:html';
 
     /** @var string $description */
-    protected $description = 'Generate JSON';
+    protected $description = 'Generate HTML';
 
-    /**
-     * @param ProductService $productService
-     * @param JSONGenerator $generator
-     */
-    public function handle(ProductService $productService, JSONGenerator $generator): void
+    public function handle(ProductService $productService, HTMLGenerator $generator): void
     {
         $productService->init();
         $categories = $productService->getData();

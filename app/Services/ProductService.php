@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Category;
+use App\Helper\Store;
 use App\Product;
 use App\ProductCategory;
 use App\ProductDiscontinued;
@@ -18,6 +19,18 @@ class ProductService extends Service
     /** @var array $seoUrls */
     protected $seoUrls = [];
 
+    /** @var string $siteUrl */
+    protected $siteUrl;
+
+    /**
+     * ProductService constructor.
+     * @param string $siteUrl
+     */
+    public function __construct(string $siteUrl)
+    {
+        $this->siteUrl = $siteUrl;
+    }
+
     /**
      *
      */
@@ -32,7 +45,6 @@ class ProductService extends Service
      */
     public function getData(): array
     {
-
         /** @var Collection|Category[] $mainCategories */
         $mainCategories = Category::where('parent_id', 0)
             ->where('status', true)
@@ -41,8 +53,9 @@ class ProductService extends Service
 
         $result = [];
         foreach ($mainCategories as $category) {
-            $categories = Category::where('parent_id', $category->category_id)->get(['category_id']);
-            $categories[] = $category;
+            $categories = Category::where('parent_id', $category->category_id)
+                ->get(['category_id'])
+                ->push($category);
 
             $categoriesIds = $this->getColumn($categories, 'category_id');
             /* @noinspection PhpUndefinedMethodInspection */
@@ -50,9 +63,9 @@ class ProductService extends Service
 
             $key = "category_id={$category->category_id}";
             if (true === key_exists($key, $this->seoUrls)) {
-                $url = sprintf('/%s', $this->seoUrls[$key]);
+                $url = sprintf("{$this->siteUrl}/%s", $this->seoUrls[$key]);
             } else {
-                $url = "/index.php?route=product/category&category_id={$category->category_id}";
+                $url = "{$this->siteUrl}/index.php?route=product/category&category_id={$category->category_id}";
             }
 
             $result[] = [
@@ -114,6 +127,7 @@ class ProductService extends Service
         }
 
         /* @noinspection PhpUndefinedMethodInspection */
+        /** @var Collection|Product[] $products */
         $products = Product::whereIn('product_id', $this->getColumn($productCategories, 'product_id'))
             ->orderBy('sort_order')
             ->with('productDescription')
@@ -121,7 +135,6 @@ class ProductService extends Service
             ->get();
 
         $result = [];
-        /** @var Collection|Product[] $products */
         foreach ($products as $product) {
             if (true === key_exists($product->product_id, $this->productsDiscontinued)) {
                 continue;
@@ -139,18 +152,17 @@ class ProductService extends Service
 
                     if (true === key_exists($query, $this->seoUrls)) {
                         $categoryUrl = $this->seoUrls[$query];
-                        $url = sprintf('/%s/%s', $categoryUrl, $this->seoUrls[$key]);
+                        $url = sprintf("{$this->siteUrl}/%s/%s", $categoryUrl, $this->seoUrls[$key]);
                     }
                 }
             }
 
             if (null === $url) {
-                $url = "/index.php?route=product/product&product_id={$product->product_id}";
+                $url = "{$this->siteUrl}/index.php?route=product/product&product_id={$product->product_id}";
             }
 
             $item = [
                 'product_id' => $product->product_id,
-                'price' => round($product->price, 0),
                 'name' => $product->productDescription->name,
                 'url' => $url,
             ];
@@ -167,15 +179,12 @@ class ProductService extends Service
      */
     protected function getPriceByProductId(int $id): array
     {
-        $result = [
-            'retail' => 0.0, 'dealer' => 0.0,
-            'wholesale' => 0.0, 'partner' => 0.0,
-        ];
+        $pricesById = Store::groupsIds();
 
-        $pricesById = [
-            1 => 'retail', 2 => 'dealer',
-            3 => 'wholesale', 4 => 'partner',
-        ];
+        $result = [];
+        foreach ($pricesById as $value) {
+            $result[$value] = 0.0;
+        }
 
         /** @var ProductDiscount[]|Collection $discounts */
         $discounts = ProductDiscount::where('product_id', $id)->get();

@@ -2,24 +2,26 @@
 
 namespace App\Console\Commands;
 
-use App\Helper\JSONGenerator;
 use App\Helper\Store;
+use App\Helper\XLSXGenerator;
 use App\Services\ProductService;
 use Illuminate\Console\Command;
 
-class GenerateJSONCommand extends Command
+class GenerateXLSXCommand extends Command
 {
     /** @var string $signature */
-    protected $signature = 'generate:json';
+    protected $signature = 'generate:xlsx';
 
     /** @var string $description */
-    protected $description = 'Generate JSON';
+    protected $description = 'Generate XLSX';
 
     /**
      * @param ProductService $productService
-     * @param JSONGenerator $generator
+     * @param XLSXGenerator $generator
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function handle(ProductService $productService, JSONGenerator $generator): void
+    public function handle(ProductService $productService, XLSXGenerator $generator): void
     {
         $productService->init();
         $categories = $productService->getData();
