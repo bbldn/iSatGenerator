@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>iSat.com.ua - Цена {{ $now }}</title>
+    <meta charset="utf-8">
 </head>
 <body>
 <table border="1" style="width: 100%">

@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\GenerateJSONCommand::class,
         \App\Console\Commands\GenerateXLSXCommand::class,
         \App\Console\Commands\GenerateHTMLCommand::class,
+        \App\Console\Commands\GeneratePDFCommand::class,
     ];
 
     /**
