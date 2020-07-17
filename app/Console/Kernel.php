@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \Illuminate\Console\KeyGenerateCommand::class,
+        \App\Console\Commands\GenerateJSONCommand::class,
     ];
 
     /**

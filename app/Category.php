@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 /**
- * @property integer product_id
+ * @property integer category_id
  * @property string|null image
  * @property integer parent_id
  * @property bool top
@@ -22,6 +22,7 @@ use Illuminate\Support\Collection;
  * @property DateTime date_added
  * @property DateTime date_modified
  * @property Category|null parent
+ * @property CategoryDescription|null categoryDescription
  * @property ProductCategory[] productsCategories
  * @property Product[] products
  * @property ProductDescription[] productsDescriptions
@@ -69,6 +70,14 @@ class Category extends Model
     public function parent(): HasOne
     {
         return $this->hasOne(Category::class, 'category_id', 'parent_id');
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function categoryDescription(): HasOne
+    {
+        return $this->hasOne(CategoryDescription::class, 'category_id', 'category_id');
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\ProductService;
 use Illuminate\Console\Command;
 
 class GenerateJSONCommand extends Command
@@ -12,11 +13,15 @@ class GenerateJSONCommand extends Command
     /** @var string $description */
     protected $description = 'Generate JSON';
 
-    /**
-     *
-     */
-    public function handle(): void
-    {
+    /** @var ProductService $productService */
+    protected $productService;
 
+    /**
+     * @param ProductService $productService
+     */
+    public function handle(ProductService $productService): void
+    {
+        $this->productService = $productService;
+        var_dump($this->productService->getData());
     }
 }
