@@ -11,7 +11,7 @@ use App\ProductDiscount;
 use App\SeoUrl;
 use Illuminate\Support\Collection;
 
-class ProductService extends Service
+class GeneratorService extends Service
 {
     /** @var array $productsDiscontinued */
     protected $productsDiscontinued = [];
@@ -45,6 +45,7 @@ class ProductService extends Service
      */
     public function getData(): array
     {
+
         /** @var Collection|Category[] $mainCategories */
         $mainCategories = Category::where('parent_id', 0)
             ->where('status', true)
@@ -193,7 +194,7 @@ class ProductService extends Service
                 continue;
             }
 
-            $result[$pricesById[$discount->customer_group_id]] = round($discount->price, 0);
+            $result[$pricesById[$discount->customer_group_id]] = round($discount->price, 2);
         }
 
         return $result;

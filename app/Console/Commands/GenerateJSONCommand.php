@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Helper\FileUploader;
 use App\Helper\JSONGenerator;
 use App\Helper\Store;
-use App\Services\ProductService;
+use App\Services\GeneratorService;
 use Illuminate\Console\Command;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -21,7 +21,7 @@ class GenerateJSONCommand extends Command
     protected $description = 'Generate JSON';
 
     /**
-     * @param ProductService $productService
+     * @param GeneratorService $generatorService
      * @param JSONGenerator $generator
      * @param FileUploader $uploader
      * @throws TransportExceptionInterface
@@ -29,13 +29,13 @@ class GenerateJSONCommand extends Command
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      */
-    public function handle(ProductService $productService, JSONGenerator $generator, FileUploader $uploader): void
+    public function handle(GeneratorService $generatorService, JSONGenerator $generator, FileUploader $uploader): void
     {
-        $productService->init();
-        $categories = $productService->getData();
+        $generatorService->init();
+        $data = $generatorService->getData();
 
         foreach (Store::groupsIds() as $groupId => $_) {
-            $generator->generateAndSave($categories, $groupId);
+            $generator->generateAndSave($data, $groupId);
             $uploader->send(storage_path("app/{$groupId}.json"), "/var/www/files/{$groupId}.json");
         }
     }

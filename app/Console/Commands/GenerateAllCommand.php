@@ -9,7 +9,7 @@ use App\Helper\JSONGenerator;
 use App\Helper\PDFGenerator;
 use App\Helper\Store;
 use App\Helper\XLSXGenerator;
-use App\Services\ProductService;
+use App\Services\GeneratorService;
 use Illuminate\Console\Command;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -25,7 +25,7 @@ class GenerateAllCommand extends Command
     protected $description = 'Generate All(JSON, HTML, XLSX, PDF)';
 
     /**
-     * @param ProductService $productService
+     * @param GeneratorService $generatorService
      * @param JSONGenerator $JSONGenerator
      * @param XLSXGenerator $XLSXGenerator
      * @param HTMLGenerator $HTMLGenerator
@@ -37,15 +37,15 @@ class GenerateAllCommand extends Command
      * @throws ServerExceptionInterface
      */
     public function handle(
-        ProductService $productService,
+        GeneratorService $generatorService,
         JSONGenerator $JSONGenerator,
         XLSXGenerator $XLSXGenerator,
         HTMLGenerator $HTMLGenerator,
         PDFGenerator $PDFGenerator,
         FileUploader $uploader): void
     {
-        $productService->init();
-        $categories = $productService->getData();
+        $generatorService->init();
+        $data = $generatorService->getData();
 
         $array = [
             'json' => $JSONGenerator,
@@ -57,7 +57,7 @@ class GenerateAllCommand extends Command
         foreach (Store::groupsIds() as $groupId => $_) {
             foreach ($array as $extension => $generator) {
                 /** @var GeneratorInterface $generator */
-                $generator->generateAndSave($categories, $groupId);
+                $generator->generateAndSave($data, $groupId);
                 $uploader->send(storage_path("app/{$groupId}.{$extension}"), "/var/www/files/{$groupId}.{$extension}");
             }
         }

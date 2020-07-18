@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\GenerateXLSXCommand::class,
         \App\Console\Commands\GenerateHTMLCommand::class,
         \App\Console\Commands\GeneratePDFCommand::class,
+        \App\Console\Commands\GenerateAllCommand::class,
     ];
 
     /**

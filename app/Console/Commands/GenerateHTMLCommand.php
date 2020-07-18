@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Helper\FileUploader;
 use App\Helper\HTMLGenerator;
 use App\Helper\Store;
-use App\Services\ProductService;
+use App\Services\GeneratorService;
 use Illuminate\Console\Command;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -21,7 +21,7 @@ class GenerateHTMLCommand extends Command
     protected $description = 'Generate HTML';
 
     /**
-     * @param ProductService $productService
+     * @param GeneratorService $generatorService
      * @param HTMLGenerator $generator
      * @param FileUploader $uploader
      * @throws TransportExceptionInterface
@@ -29,13 +29,13 @@ class GenerateHTMLCommand extends Command
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      */
-    public function handle(ProductService $productService, HTMLGenerator $generator, FileUploader $uploader): void
+    public function handle(GeneratorService $generatorService, HTMLGenerator $generator, FileUploader $uploader): void
     {
-        $productService->init();
-        $categories = $productService->getData();
+        $generatorService->init();
+        $data = $generatorService->getData();
 
         foreach (Store::groupsIds() as $groupId => $_) {
-            $generator->generateAndSave($categories, $groupId);
+            $generator->generateAndSave($data, $groupId);
             $uploader->send(storage_path("app/{$groupId}.html"), "/var/www/files/{$groupId}.html");
         }
     }
