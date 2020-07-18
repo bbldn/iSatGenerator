@@ -2,26 +2,15 @@
 
 namespace App\Helper;
 
-use Dompdf\Dompdf;
-use Illuminate\Support\Facades\Storage;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 
 class PDFGenerator implements GeneratorInterface
 {
-    /** @var Dompdf $domPdf */
-    protected $domPdf;
-
-    /**
-     * PDFGenerator constructor.
-     * @param Dompdf $domPdf
-     */
-    public function __construct(Dompdf $domPdf)
-    {
-        $this->domPdf = $domPdf;
-    }
-
     /**
      * @param array $categories
      * @param int $customerGroupId
+     * @throws \Mpdf\MpdfException
      */
     public function generateAndSave(array $categories, int $customerGroupId): void
     {
@@ -31,11 +20,8 @@ class PDFGenerator implements GeneratorInterface
             'now' => date('Y-m-d H:i:s'),
         ];
 
-        $this->domPdf->loadHtml(view('html', $data)->toHtml());
-        $this->domPdf->setPaper('A4', 'landscape');
-        $this->domPdf->render();
-        $this->domPdf->output();
-
-        Storage::put("{$customerGroupId}.pdf", $this->domPdf->output());
+        $mpdf = new Mpdf();
+        $mpdf->WriteHTML(view('html', $data)->toHtml());
+        $mpdf->Output(storage_path("app/{$customerGroupId}.pdf"), Destination::FILE);
     }
 }

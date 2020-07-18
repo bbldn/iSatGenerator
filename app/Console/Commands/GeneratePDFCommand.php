@@ -18,6 +18,7 @@ class GeneratePDFCommand extends Command
     /**
      * @param ProductService $productService
      * @param PDFGenerator $generator
+     * @throws \Mpdf\MpdfException
      */
     public function handle(ProductService $productService, PDFGenerator $generator): void
     {
