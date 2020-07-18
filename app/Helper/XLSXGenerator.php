@@ -2,9 +2,11 @@
 
 namespace App\Helper;
 
+use PhpOffice\PhpSpreadsheet\Exception as PhpSpreadsheetException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpSpreadsheetWriterException;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class XLSXGenerator implements GeneratorInterface
@@ -41,7 +43,7 @@ class XLSXGenerator implements GeneratorInterface
      * @param array $category
      * @param int $customerGroupId
      * @param int $line
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws PhpSpreadsheetException
      */
     protected function fillCategory(Worksheet $sheet, array $category, int $customerGroupId, int $line): void
     {
@@ -91,8 +93,8 @@ class XLSXGenerator implements GeneratorInterface
      * @param array $categories
      * @param int $customerGroupId
      * @return mixed|void
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws PhpSpreadsheetException
+     * @throws PhpSpreadsheetWriterException
      */
     public function generateAndSave(array $categories, int $customerGroupId): void
     {
