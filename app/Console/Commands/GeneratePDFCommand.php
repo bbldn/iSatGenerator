@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\FileUploaderException;
 use App\Helper\FileUploader;
 use App\Helper\PDFGenerator;
 use App\Helper\Store;
@@ -30,6 +31,7 @@ class GeneratePDFCommand extends Command
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
+     * @throws FileUploaderException
      */
     public function handle(GeneratorService $generatorService, PDFGenerator $generator, FileUploader $uploader): void
     {

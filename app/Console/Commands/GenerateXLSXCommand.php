@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\FileUploaderException;
 use App\Helper\FileUploader;
 use App\Helper\Store;
 use App\Helper\XLSXGenerator;
@@ -32,6 +33,7 @@ class GenerateXLSXCommand extends Command
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
+     * @throws FileUploaderException
      */
     public function handle(GeneratorService $generatorService, XLSXGenerator $generator, FileUploader $uploader): void
     {

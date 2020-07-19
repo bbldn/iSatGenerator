@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\FileUploaderException;
 use App\Helper\FileUploader;
 use App\Helper\GeneratorInterface;
 use App\Helper\HTMLGenerator;
@@ -35,6 +36,7 @@ class GenerateAllCommand extends Command
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
+     * @throws FileUploaderException
      */
     public function handle(
         GeneratorService $generatorService,

@@ -2,6 +2,7 @@
 
 namespace App\Helper;
 
+use App\Exceptions\FileUploaderException;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Component\Mime\Part\Multipart\FormDataPart;
@@ -43,6 +44,7 @@ class FileUploader
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
+     * @throws FileUploaderException
      */
     public function send(string $fileName, string $destination): void
     {
@@ -58,12 +60,6 @@ class FileUploader
             'body' => $formData->bodyToIterable(),
         ]);
 
-        if (200 !== $response->getStatusCode()) {
-            Log::error(ExceptionFormatter::f('Response is not 200'));
-
-            return;
-        }
-
         $this->validate($response);
     }
 
@@ -73,31 +69,29 @@ class FileUploader
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws FileUploaderException
      */
     protected function validate(ResponseInterface $response): void
     {
+        if (200 !== $response->getStatusCode()) {
+            throw new FileUploaderException('Response is not 200');
+        }
+
         $json = json_decode($response->getContent(), true);
         if (false === $json) {
-            Log::error(ExceptionFormatter::f('Response is not JSON'));
-
-            return;
+            throw new FileUploaderException('Response is not JSON');
         }
 
         if (false === key_exists('ok', $json)) {
-            Log::error(ExceptionFormatter::f('Response is not include `ok` field'));
-
-            return;
+            throw new FileUploaderException('Response is not include `ok` field');
         }
 
         if (false === $json['ok']) {
             if (false === key_exists('errors', $json)) {
-                Log::error(ExceptionFormatter::f('Response is not include `errors` field'));
-
-                return;
+                throw new FileUploaderException('Response is not include `errors` field');
             }
-            Log::error(ExceptionFormatter::f('Error:' . implode(PHP_EOL, $json['errors'])));
 
-            return;
+            throw new FileUploaderException('Error:' . implode('', $json['errors']));
         }
     }
 }

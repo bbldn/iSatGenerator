@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\FileUploaderException;
 use App\Helper\FileUploader;
 use App\Helper\HTMLGenerator;
 use App\Helper\Store;
@@ -28,6 +29,7 @@ class GenerateHTMLCommand extends Command
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
+     * @throws FileUploaderException
      */
     public function handle(GeneratorService $generatorService, HTMLGenerator $generator, FileUploader $uploader): void
     {
