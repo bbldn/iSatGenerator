@@ -15,9 +15,9 @@ class HTMLGenerator implements GeneratorInterface
         $data['customerGroupId'] = $customerGroupId;
         $data['now'] = date('Y-m-d H:i:s');
         if ($customerGroupId > 1) {
-            $data['currency'] = $data['currency']['UAH'];
-        } else {
             $data['currency'] = $data['currency']['USD'];
+        } else {
+            $data['currency'] = $data['currency']['UAH'];
         }
 
         Storage::put("{$customerGroupId}.html", view('html', $data)->toHtml());

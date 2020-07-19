@@ -154,16 +154,15 @@ class XLSXGenerator implements GeneratorInterface
     /**
      * @param array $data
      * @param int $customerGroupId
-     * @return mixed|void
      * @throws PhpSpreadsheetException
      * @throws PhpSpreadsheetWriterException
      */
     public function generateAndSave(array $data, int $customerGroupId): void
     {
         if ($customerGroupId > 1) {
-            $this->currency = $data['currency']['UAH'];
-        } else {
             $this->currency = $data['currency']['USD'];
+        } else {
+            $this->currency = $data['currency']['UAH'];
         }
 
         $this->createXLSX($data, $customerGroupId);

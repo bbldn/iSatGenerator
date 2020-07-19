@@ -13,9 +13,9 @@ class JSONGenerator implements GeneratorInterface
     public function generateAndSave(array $data, int $customerGroupId): void
     {
         if ($customerGroupId > 1) {
-            $currency = $data['currency']['UAH'];
-        } else {
             $currency = $data['currency']['USD'];
+        } else {
+            $currency = $data['currency']['UAH'];
         }
         unset($data['currency']);
 
