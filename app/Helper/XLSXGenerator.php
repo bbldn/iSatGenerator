@@ -11,6 +11,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class XLSXGenerator implements GeneratorInterface
 {
+    /** @var array $currency */
+    protected $currency;
+
     /**
      * @param Worksheet $sheet
      * @param int $customerGroupId
@@ -75,35 +78,66 @@ class XLSXGenerator implements GeneratorInterface
     {
         $sheet->setCellValue("A{$line}", $product['name']);
         $sheet->setCellValue("B{$line}", $product['url']);
-        $sheet->setCellValue("C{$line}", $product['retail']);
+        $sheet->setCellValue(
+            "C{$line}",
+            sprintf(
+                '%s%s%s',
+                $this->currency['symbol_left'],
+                round($product['retail'] * $this->currency['value'], $this->currency['decimal_place']),
+                $this->currency['symbol_right']
+            )
+        );
         switch ($customerGroupId) {
             case 2:
-                $sheet->setCellValue("D{$line}", $product['dealer']);
+                $sheet->setCellValue(
+                    "D{$line}",
+                    sprintf(
+                        '%s%s%s',
+                        $this->currency['symbol_left'],
+                        round($product['dealer'] * $this->currency['value'], $this->currency['decimal_place']),
+                        $this->currency['symbol_right']
+                    )
+                );
                 break;
             case 3:
-                $sheet->setCellValue("D{$line}", $product['wholesale']);
+                $sheet->setCellValue(
+                    "D{$line}",
+                    sprintf(
+                        '%s%s%s',
+                        $this->currency['symbol_left'],
+                        round($product['wholesale'] * $this->currency['value'], $this->currency['decimal_place']),
+                        $this->currency['symbol_right']
+                    )
+                );
                 break;
             case 4:
-                $sheet->setCellValue("D{$line}", $product['partner']);
+                $sheet->setCellValue(
+                    "D{$line}",
+                    sprintf(
+                        '%s%s%s',
+                        $this->currency['symbol_left'],
+                        round($product['partner'] * $this->currency['value'], $this->currency['decimal_place']),
+                        $this->currency['symbol_right']
+                    )
+                );
                 break;
         }
     }
 
     /**
-     * @param array $categories
+     * @param array $data
      * @param int $customerGroupId
-     * @return mixed|void
      * @throws PhpSpreadsheetException
      * @throws PhpSpreadsheetWriterException
      */
-    public function generateAndSave(array $categories, int $customerGroupId): void
+    protected function createXLSX(array $data, int $customerGroupId)
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $this->fillHead($sheet, $customerGroupId);
 
         $line = 2;
-        foreach ($categories as $category) {
+        foreach ($data['categories'] as $category) {
             $this->fillCategory($sheet, $category, $customerGroupId, $line);
 
             $line += 2;
@@ -115,5 +149,23 @@ class XLSXGenerator implements GeneratorInterface
 
         $writer = new Xlsx($spreadsheet);
         $writer->save(storage_path("app/{$customerGroupId}.xlsx"));
+    }
+
+    /**
+     * @param array $data
+     * @param int $customerGroupId
+     * @return mixed|void
+     * @throws PhpSpreadsheetException
+     * @throws PhpSpreadsheetWriterException
+     */
+    public function generateAndSave(array $data, int $customerGroupId): void
+    {
+        if ($customerGroupId > 1) {
+            $this->currency = $data['currency']['UAH'];
+        } else {
+            $this->currency = $data['currency']['USD'];
+        }
+
+        $this->createXLSX($data, $customerGroupId);
     }
 }

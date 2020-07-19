@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Category;
+use App\Currency;
 use App\Helper\Store;
 use App\Product;
 use App\ProductCategory;
@@ -45,15 +46,18 @@ class GeneratorService extends Service
      */
     public function getData(): array
     {
-
         /** @var Collection|Category[] $mainCategories */
         $mainCategories = Category::where('parent_id', 0)
             ->where('status', true)
             ->with('categoryDescription')
             ->get();
 
-        $result = [];
+        $resultCategories = [];
         foreach ($mainCategories as $category) {
+            if (null === $category->categoryDescription) {
+                continue;
+            }
+
             $categories = Category::where('parent_id', $category->category_id)
                 ->get(['category_id'])
                 ->push($category);
@@ -69,7 +73,7 @@ class GeneratorService extends Service
                 $url = "{$this->siteUrl}/index.php?route=product/category&category_id={$category->category_id}";
             }
 
-            $result[] = [
+            $resultCategories[] = [
                 'category_id' => $category->category_id,
                 'name' => $category->categoryDescription->name,
                 'url' => $url,
@@ -77,8 +81,15 @@ class GeneratorService extends Service
             ];
         }
 
+        $currency = [];
+        foreach (Currency::all() as $item) {
+            $currency[$item->code] = $item->toArray();
+        }
 
-        return $result;
+        return [
+            'categories' => $resultCategories,
+            'currency' => $currency,
+        ];
     }
 
     /**

@@ -37,16 +37,32 @@
                 <td>
                     <a href="{{ $product['url'] }}">{{ $product['name'] }}</a>
                 </td>
-                <td>{{ $product['retail'] }}</td>
+                <td>
+                    {{ $currency['symbol_left'] }}
+                    {{ round($product['retail'] * $currency['value'], $currency['decimal_place']) }}
+                    {{ $currency['symbol_right'] }}
+                </td>
                 @switch($customerGroupId)
                     @case(2)
-                    <td>{{ $product['dealer'] }}</td>
+                    <td>
+                        {{ $currency['symbol_left'] }}
+                        {{ round($product['dealer'] * $currency['value'], $currency['decimal_place']) }}
+                        {{ $currency['symbol_right'] }}
+                    </td>
                     @break
                     @case(3)
-                    <td>{{ $product['wholesale'] }}</td>
+                    <td>
+                        {{ $currency['symbol_left'] }}
+                        {{ round($product['wholesale'] * $currency['value'], $currency['decimal_place']) }}
+                        {{ $currency['symbol_right'] }}
+                    </td>
                     @break
                     @case(4)
-                    <td>{{ $product['partner'] }}</td>
+                    <td>
+                        {{ $currency['symbol_left'] }}
+                        {{ round($product['partner'] * $currency['value'], $currency['decimal_place']) }}
+                        {{ $currency['symbol_right'] }}
+                    </td>
                     @break
                 @endswitch
             </tr>

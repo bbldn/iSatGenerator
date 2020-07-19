@@ -47,6 +47,7 @@ class Currency extends Model
 
     /** @var array $casts */
     protected $casts = [
+        'decimal_place' => 'int',
         'value' => 'float',
         'status' => 'bool',
     ];

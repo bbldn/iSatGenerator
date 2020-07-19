@@ -8,17 +8,19 @@ use Mpdf\Output\Destination;
 class PDFGenerator implements GeneratorInterface
 {
     /**
-     * @param array $categories
+     * @param array $data
      * @param int $customerGroupId
      * @throws \Mpdf\MpdfException
      */
-    public function generateAndSave(array $categories, int $customerGroupId): void
+    public function generateAndSave(array $data, int $customerGroupId): void
     {
-        $data = [
-            'categories' => $categories,
-            'customerGroupId' => $customerGroupId,
-            'now' => date('Y-m-d H:i:s'),
-        ];
+        $data['customerGroupId'] = $customerGroupId;
+        $data['now'] = date('Y-m-d H:i:s');
+        if ($customerGroupId > 1) {
+            $data['currency'] = $data['currency']['UAH'];
+        } else {
+            $data['currency'] = $data['currency']['USD'];
+        }
 
         $mpdf = new Mpdf();
         $mpdf->WriteHTML(view('html', $data)->toHtml());

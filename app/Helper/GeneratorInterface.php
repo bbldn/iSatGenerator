@@ -5,8 +5,8 @@ namespace App\Helper;
 interface GeneratorInterface
 {
     /**
-     * @param array $categories
+     * @param array $data
      * @param int $customerGroupId
      */
-    public function generateAndSave(array $categories, int $customerGroupId): void;
+    public function generateAndSave(array $data, int $customerGroupId): void;
 }
