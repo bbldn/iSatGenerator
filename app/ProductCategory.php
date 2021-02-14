@@ -44,18 +44,22 @@ class ProductCategory extends Model
     /** @var bool */
     public $timestamps = false;
 
-    /** @var string $table */
-    protected $table = 'oc_product_to_category';
-
-    /** @var string $primaryKey */
+    /** @var string */
     protected $primaryKey = self::productId;
+
+    /** @var string */
+    protected $table = 'oc_product_to_category';
 
     /**
      * @return HasOne
      */
     public function product(): HasOne
     {
-        return $this->hasOne(Product::class, Product::productId, Product::productId);
+        return $this->hasOne(
+            Product::class,
+            Product::productId,
+            self::productId
+        );
     }
 
     /**
@@ -63,7 +67,11 @@ class ProductCategory extends Model
      */
     public function productDiscounts(): HasMany
     {
-        return $this->hasMany(ProductDiscount::class, Product::productId, Product::productId);
+        return $this->hasMany(
+            ProductDiscount::class,
+            Product::productId,
+            self::productId
+        );
     }
 
     /**
@@ -71,7 +79,11 @@ class ProductCategory extends Model
      */
     public function productDescription(): HasOne
     {
-        return $this->hasOne(ProductDescription::class, Product::productId, Product::productId);
+        return $this->hasOne(
+            ProductDescription::class,
+            Product::productId,
+            self::productId
+        );
     }
 
     /**
@@ -79,7 +91,11 @@ class ProductCategory extends Model
      */
     public function productDiscontinued(): HasOne
     {
-        return $this->hasOne(ProductDiscontinued::class, Product::productId, Product::productId);
+        return $this->hasOne(
+            ProductDiscontinued::class,
+            Product::productId,
+            self::productId
+        );
     }
 
     /**
@@ -87,6 +103,10 @@ class ProductCategory extends Model
      */
     public function category(): HasOne
     {
-        return $this->hasOne(Category::class, Category::categoryId, Category::categoryId);
+        return $this->hasOne(
+            Category::class,
+            Category::categoryId,
+            self::categoryId
+        );
     }
 }

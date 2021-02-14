@@ -29,6 +29,8 @@ use Illuminate\Support\Collection;
  */
 class ProductDiscount extends Model
 {
+    public const productId = 'product_id';
+
     /** @var string[] $fillable */
     protected $fillable = [
         'product_id', 'customer_group_id',

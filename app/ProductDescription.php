@@ -59,17 +59,21 @@ class ProductDescription extends Model
     public $timestamps = false;
 
     /** @var string */
-    protected $table = 'oc_product_description';
+    protected $primaryKey = self::productId;
 
     /** @var string */
-    protected $primaryKey = self::productId;
+    protected $table = 'oc_product_description';
 
     /**
      * @return HasOne
      */
     public function product(): HasOne
     {
-        return $this->hasOne(Product::class, Product::productId, Product::productId);
+        return $this->hasOne(
+            Product::class,
+            Product::productId,
+            self::productId
+        );
     }
 
     /**
@@ -77,7 +81,11 @@ class ProductDescription extends Model
      */
     public function productDescription(): HasOne
     {
-        return $this->hasOne(ProductDescription::class, Product::productId, Product::productId);
+        return $this->hasOne(
+            ProductDescription::class,
+            Product::productId,
+            self::productId
+        );
     }
 
     /**
@@ -85,7 +93,11 @@ class ProductDescription extends Model
      */
     public function productDiscounts(): HasMany
     {
-        return $this->hasMany(ProductDiscount::class, Product::productId, Product::productId);
+        return $this->hasMany(
+            ProductDiscount::class,
+            Product::productId,
+            self::productId
+        );
     }
 
     /**
@@ -93,6 +105,10 @@ class ProductDescription extends Model
      */
     public function productCategories(): HasMany
     {
-        return $this->hasMany(ProductCategory::class, Product::productId, Product::productId);
+        return $this->hasMany(
+            ProductCategory::class,
+            Product::productId,
+            self::productId
+        );
     }
 }
