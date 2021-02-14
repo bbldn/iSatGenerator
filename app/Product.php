@@ -10,44 +10,44 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 /**
- * @property integer product_id
- * @property string model
- * @property string sku
- * @property string upc
- * @property string ean
- * @property string jan
- * @property string isbn
- * @property string mpn
- * @property string location
- * @property integer quantity
- * @property integer stock_status_id
- * @property string image
- * @property integer manufacturer_id
- * @property bool shipping
- * @property float price
- * @property integer points
- * @property integer tax_class_id
- * @property DateTime date_available
- * @property float weight
- * @property integer weight_class_id
- * @property float length
- * @property float width
- * @property float height
- * @property integer length_class_id
- * @property bool subtract
- * @property integer minimum
- * @property integer sort_order
- * @property bool status
- * @property integer viewed
- * @property DateTime date_added
- * @property DateTime date_modified
- * @property ProductDescription|null productDescription
- * @property ProductDiscontinued|null productDiscontinued
+ * @property string|null sku
+ * @property string|null upc
+ * @property string|null ean
+ * @property string|null jan
+ * @property string|null mpn
+ * @property string|null isbn
+ * @property float|null price
+ * @property bool|null status
+ * @property float|null width
+ * @property string|null model
+ * @property float|null height
+ * @property float|null weight
+ * @property float|null length
+ * @property string|null image
+ * @property bool|null shipping
+ * @property bool|null subtract
+ * @property integer|null viewed
+ * @property integer|null points
+ * @property integer|null minimum
+ * @property string|null location
+ * @property integer|null quantity
+ * @property integer|null product_id
+ * @property integer|null sort_order
+ * @property DateTime|null date_added
+ * @property integer|null tax_class_id
+ * @property DateTime|null date_modified
+ * @property DateTime|null date_available
+ * @property integer|null stock_status_id
+ * @property integer|null manufacturer_id
+ * @property integer|null weight_class_id
+ * @property integer|null length_class_id
  * @property ProductDiscount[] productDiscounts
  * @property ProductCategory[] productCategories
+ * @property ProductDescription|null productDescription
+ * @property ProductDiscontinued|null productDiscontinued
  * @method static Product|null find(integer $id)
  * @method static Collection all(array $columns = ['*'])
- * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static Builder where($column, $operator = null, $value = null, $bool = 'and')
  * @method static Product create(array $attributes)
  */
 class Product extends Model
@@ -181,7 +181,11 @@ class Product extends Model
      */
     public function productDiscounts(): HasMany
     {
-        return $this->hasMany(ProductDiscount::class, self::productId, self::productId);
+        return $this->hasMany(
+            ProductDiscount::class,
+            ProductDiscount::productId,
+            self::productId
+        );
     }
 
     /**
@@ -189,7 +193,11 @@ class Product extends Model
      */
     public function productDescription(): HasOne
     {
-        return $this->hasOne(ProductDescription::class, self::productId, self::productId);
+        return $this->hasOne(
+            ProductDescription::class,
+            ProductDescription::productId,
+            self::productId
+        );
     }
 
     /**
@@ -197,7 +205,11 @@ class Product extends Model
      */
     public function productDiscontinued(): HasOne
     {
-        return $this->hasOne(ProductDiscontinued::class, self::productId, self::productId);
+        return $this->hasOne(
+            ProductDiscontinued::class,
+            ProductDiscontinued::productId,
+            self::productId
+        );
     }
 
     /**
@@ -205,6 +217,10 @@ class Product extends Model
      */
     public function productCategories(): HasMany
     {
-        return $this->hasMany(ProductCategory::class, self::productId, self::productId);
+        return $this->hasMany(
+            ProductCategory::class,
+            ProductCategory::productId,
+            self::productId
+        );
     }
 }
