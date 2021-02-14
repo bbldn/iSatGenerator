@@ -52,58 +52,136 @@ use Illuminate\Support\Collection;
  */
 class Product extends Model
 {
+    public const ean = 'ean';
+
+    public const upc = 'upc';
+
+    public const jan = 'jan';
+
+    public const mpn = 'mpn';
+
+    public const sku = 'sku';
+
+    public const isbn = 'isbn';
+
+    public const image = 'image';
+
+    public const model = 'model';
+
+    public const price = 'price';
+
+    public const width = 'width';
+
+    public const points = 'points';
+
+    public const length = 'length';
+
+    public const height = 'height';
+
+    public const weight = 'weight';
+
+    public const status = 'status';
+
+    public const viewed = 'viewed';
+
+    public const minimum = 'minimum';
+
+    public const subtract = 'subtract';
+
+    public const location = 'location';
+
+    public const quantity = 'quantity';
+
+    public const shipping = 'shipping';
+
+    public const dateAdded = 'date_added';
+
     public const productId = 'product_id';
 
-    /** @var string[] $fillable */
+    public const sortOrder = 'sort_order';
+
+    public const taxClassId = 'tax_class_id';
+
+    public const dateModified = 'date_modified';
+
+    public const dateAvailable = 'date_available';
+
+    public const lengthClassId = 'length_class_id';
+
+    public const weightClassId = 'weight_class_id';
+
+    public const stockStatusId = 'stock_status_id';
+
+    public const manufacturerId = 'manufacturer_id';
+
+    /** @var string[] */
     protected $fillable = [
-        'model', 'sku', 'upc',
-        'ean', 'jan', 'isbn',
-        'mpn', 'location', 'quantity',
-        'stock_status_id', 'image',
-        'manufacturer_id', 'shipping',
-        'price', 'points', 'tax_class_id',
-        'date_available', 'weight',
-        'weight_class_id', 'length',
-        'width', 'height', 'length_class_id',
-        'subtract', 'minimum', 'sort_order',
-        'status', 'viewed', 'date_added',
-        'date_modified',
+        self::ean,
+        self::upc,
+        self::jan,
+        self::mpn,
+        self::sku,
+        self::isbn,
+        self::image,
+        self::model,
+        self::price,
+        self::width,
+        self::points,
+        self::length,
+        self::height,
+        self::weight,
+        self::status,
+        self::viewed,
+        self::minimum,
+        self::subtract,
+        self::location,
+        self::quantity,
+        self::shipping,
+        self::dateAdded,
+        self::sortOrder,
+        self::taxClassId,
+        self::dateModified,
+        self::dateAvailable,
+        self::lengthClassId,
+        self::weightClassId,
+        self::stockStatusId,
+        self::manufacturerId,
     ];
 
-    /** @var string[] $dates */
+    /** @var string[] */
     protected $dates = [
-        'date_available',
-        'date_added',
-        'date_modified',
+        self::dateAdded,
+        self::dateModified,
+        self::dateAvailable,
     ];
 
-    /** @var array $casts */
+    /** @var array */
     protected $casts = [
-        'shipping' => 'bool',
-        'price' => 'float',
-        'weight' => 'float',
-        'length' => 'float',
-        'width' => 'float',
-        'height' => 'float',
-        'subtract' => 'bool',
-        'status' => 'bool',
+        self::status => 'bool',
+        self::price => 'float',
+        self::width => 'float',
+        self::height => 'float',
+        self::weight => 'float',
+        self::length => 'float',
+        self::shipping => 'bool',
+        self::subtract => 'bool',
     ];
 
-    /** @var bool $timestamps */
+    /** @var bool */
     public $timestamps = false;
 
-    /** @var string $table */
+    /** @var string */
     protected $table = 'oc_product';
 
-    /** @var string $primaryKey */
-    protected $primaryKey = 'product_id';
+    /** @var string */
+    protected $primaryKey = self::productId;
 
     /**
      * @return HasMany
      */
     public function productDiscounts(): HasMany
     {
-        return $this->hasMany(ProductDiscount::class, 'product_id', 'product_id');
+        return $this->hasMany(ProductDiscount::class, self::productId, self::productId);
     }
 
     /**
@@ -111,7 +189,7 @@ class Product extends Model
      */
     public function productDescription(): HasOne
     {
-        return $this->hasOne(ProductDescription::class, 'product_id', 'product_id');
+        return $this->hasOne(ProductDescription::class, self::productId, self::productId);
     }
 
     /**
@@ -119,7 +197,7 @@ class Product extends Model
      */
     public function productDiscontinued(): HasOne
     {
-        return $this->hasOne(ProductDiscontinued::class, 'product_id', 'product_id');
+        return $this->hasOne(ProductDiscontinued::class, self::productId, self::productId);
     }
 
     /**
@@ -127,6 +205,6 @@ class Product extends Model
      */
     public function productCategories(): HasMany
     {
-        return $this->hasMany(ProductCategory::class, 'product_id', 'product_id');
+        return $this->hasMany(ProductCategory::class, self::productId, self::productId);
     }
 }

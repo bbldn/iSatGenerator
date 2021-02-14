@@ -24,31 +24,54 @@ use Illuminate\Support\Collection;
  */
 class Currency extends Model
 {
-    /** @var bool $timestamps */
+    public const code = 'code';
+
+    public const title = 'title';
+
+    public const value = 'value';
+
+    public const status = 'status';
+
+    public const symbolLeft = 'symbol_left';
+
+    public const currencyId = 'currency_id';
+
+    public const symbolRight = 'symbol_right';
+
+    public const dateModified = 'date_modified';
+
+    public const decimalPlace = 'decimal_place';
+
+    /** @var bool */
     public $timestamps = false;
 
-    /** @var string $table */
+    /** @var string */
     protected $table = 'oc_currency';
 
-    /** @var string $primaryKey */
-    protected $primaryKey = 'currency_id';
+    /** @var string */
+    protected $primaryKey = self::currencyId;
 
-    /** @var string[] $fillable */
+    /** @var string[] */
     protected $fillable = [
-        'title', 'code', 'symbol_left',
-        'symbol_right', 'decimal_place',
-        'value', 'status', 'date_modified',
+        self::code,
+        self::value,
+        self::title,
+        self::status,
+        self::symbolLeft,
+        self::symbolRight,
+        self::decimalPlace,
+        self::dateModified,
     ];
 
-    /** @var string[] $dates */
+    /** @var string[] */
     protected $dates = [
-        'date_modified',
+        self::dateModified,
     ];
 
-    /** @var array $casts */
+    /** @var array */
     protected $casts = [
-        'decimal_place' => 'int',
-        'value' => 'float',
-        'status' => 'bool',
+        self::value => 'float',
+        self::status => 'bool',
+        self::decimalPlace => 'int',
     ];
 }
