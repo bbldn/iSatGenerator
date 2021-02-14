@@ -11,23 +11,23 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 /**
- * @property integer category_id
+ * @property bool|null top
+ * @property bool|null status
  * @property string|null image
- * @property integer parent_id
- * @property bool top
- * @property integer column
- * @property integer sort_order
- * @property bool status
- * @property string page_group_links
- * @property DateTime date_added
- * @property DateTime date_modified
- * @property Category|null parent
- * @property CategoryDescription|null categoryDescription
- * @property ProductCategory[] productsCategories
+ * @property integer|null column
+ * @property integer|null parent_id
+ * @property integer|null sort_order
+ * @property integer|null category_id
+ * @property DateTime|null date_added
+ * @property DateTime|null date_modified
+ * @property string|null page_group_links
  * @property Product[] products
+ * @property Category|null parent
+ * @property ProductDiscount[] productsDiscounts
+ * @property ProductCategory[] productsCategories
  * @property ProductDescription[] productsDescriptions
  * @property ProductDiscontinued[] productsDiscontinued
- * @property ProductDiscount[] productsDiscounts
+ * @property CategoryDescription|null categoryDescription
  * @method static Category|null find(integer $id)
  * @method static Collection|Category[] all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
@@ -65,6 +65,18 @@ class Category extends Model
     protected $primaryKey = self::categoryId;
 
     /** @var string[] */
+    protected $dates = [
+        self::dateAdded,
+        self::dateModified,
+    ];
+
+    /** @var array */
+    protected $casts = [
+        self::top => 'bool',
+        self::status => 'bool',
+    ];
+
+    /** @var string[] */
     protected $fillable = [
         self::top,
         self::image,
@@ -77,24 +89,16 @@ class Category extends Model
         self::pageGroupLinks,
     ];
 
-    /** @var string[] */
-    protected $dates = [
-        self::dateAdded,
-        self::dateModified,
-    ];
-
-    /** @var array */
-    protected $casts = [
-        self::top => 'bool',
-        self::status => 'bool',
-    ];
-
     /**
      * @return HasOne
      */
     public function parent(): HasOne
     {
-        return $this->hasOne(Category::class, self::categoryId, self::parentId);
+        return $this->hasOne(
+            Category::class,
+            Category::categoryId,
+            self::parentId
+        );
     }
 
     /**
@@ -102,7 +106,11 @@ class Category extends Model
      */
     public function categoryDescription(): HasOne
     {
-        return $this->hasOne(CategoryDescription::class, self::categoryId, self::categoryId);
+        return $this->hasOne(
+            CategoryDescription::class,
+            CategoryDescription::categoryId,
+            self::categoryId
+        );
     }
 
     /**
@@ -110,7 +118,11 @@ class Category extends Model
      */
     public function productsCategories(): HasMany
     {
-        return $this->hasMany(ProductCategory::class, self::categoryId, self::categoryId);
+        return $this->hasMany(
+            ProductCategory::class,
+            ProductCategory::categoryId,
+            self::categoryId
+        );
     }
 
     /**
