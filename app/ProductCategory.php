@@ -9,46 +9,53 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 /**
+ * @property bool main_category
  * @property integer product_id
  * @property integer category_id
- * @property bool main_category
  * @property Product|null product
+ * @property Category|null category
+ * @property ProductDiscount[] productDiscounts
  * @property ProductDescription|null productDescription
  * @property ProductDiscontinued|null productDiscontinued
- * @property ProductDiscount[] productDiscounts
- * @property Category|null category
  * @method static Product|null find(integer $id)
+ * @method static Product create(array $attributes)
  * @method static Collection all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
- * @method static Product create(array $attributes)
  */
 class ProductCategory extends Model
 {
-    /** @var string[] $fillable */
+    public const productId = 'product_id';
+
+    public const categoryId = 'category_id';
+
+    public const mainCategory = 'main_category';
+
+    /** @var string[] */
     protected $fillable = [
-        'category_id', 'main_category',
+        self::categoryId,
+        self::mainCategory,
     ];
 
-    /** @var array $casts */
+    /** @var array */
     protected $casts = [
-        'main_category' => 'bool',
+        self::mainCategory => 'bool',
     ];
 
-    /** @var bool $timestamps */
+    /** @var bool */
     public $timestamps = false;
 
     /** @var string $table */
     protected $table = 'oc_product_to_category';
 
     /** @var string $primaryKey */
-    protected $primaryKey = 'product_id';
+    protected $primaryKey = self::productId;
 
     /**
      * @return HasOne
      */
     public function product(): HasOne
     {
-        return $this->hasOne(Product::class, 'product_id', 'product_id');
+        return $this->hasOne(Product::class, Product::productId, Product::productId);
     }
 
     /**
@@ -56,7 +63,7 @@ class ProductCategory extends Model
      */
     public function productDiscounts(): HasMany
     {
-        return $this->hasMany(ProductDiscount::class, 'product_id', 'product_id');
+        return $this->hasMany(ProductDiscount::class, Product::productId, Product::productId);
     }
 
     /**
@@ -64,7 +71,7 @@ class ProductCategory extends Model
      */
     public function productDescription(): HasOne
     {
-        return $this->hasOne(ProductDescription::class, 'product_id', 'product_id');
+        return $this->hasOne(ProductDescription::class, Product::productId, Product::productId);
     }
 
     /**
@@ -72,7 +79,7 @@ class ProductCategory extends Model
      */
     public function productDiscontinued(): HasOne
     {
-        return $this->hasOne(ProductDiscontinued::class, 'product_id', 'product_id');
+        return $this->hasOne(ProductDiscontinued::class, Product::productId, Product::productId);
     }
 
     /**
@@ -80,6 +87,6 @@ class ProductCategory extends Model
      */
     public function category(): HasOne
     {
-        return $this->hasOne(Category::class, 'category_id', 'category_id');
+        return $this->hasOne(Category::class, Category::categoryId, Category::categoryId);
     }
 }
