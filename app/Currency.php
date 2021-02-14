@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 /**
- * @property integer currency_id
- * @property string title
- * @property string code
- * @property string symbol_left
- * @property string symbol_right
- * @property integer decimal_place
- * @property float value
- * @property bool status
- * @property DateTime date_modified
+ * @property string|null code
+ * @property float|null value
+ * @property bool|null status
+ * @property string|null title
+ * @property string|null symbol_left
+ * @property string|null symbol_right
+ * @property integer|null currency_id
+ * @property integer|null decimal_place
+ * @property DateTime|null date_modified
  * @method static Currency|null find(integer $id)
  * @method static Collection|Currency[] all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
@@ -52,6 +52,18 @@ class Currency extends Model
     protected $primaryKey = self::currencyId;
 
     /** @var string[] */
+    protected $dates = [
+        self::dateModified,
+    ];
+
+    /** @var array<string, string> */
+    protected $casts = [
+        self::value => 'float',
+        self::status => 'bool',
+        self::decimalPlace => 'int',
+    ];
+
+    /** @var string[] */
     protected $fillable = [
         self::code,
         self::value,
@@ -61,17 +73,5 @@ class Currency extends Model
         self::symbolRight,
         self::decimalPlace,
         self::dateModified,
-    ];
-
-    /** @var string[] */
-    protected $dates = [
-        self::dateModified,
-    ];
-
-    /** @var array */
-    protected $casts = [
-        self::value => 'float',
-        self::status => 'bool',
-        self::decimalPlace => 'int',
     ];
 }

@@ -70,7 +70,7 @@ class Category extends Model
         self::dateModified,
     ];
 
-    /** @var array */
+    /** @var array<string, string> */
     protected $casts = [
         self::top => 'bool',
         self::status => 'bool',

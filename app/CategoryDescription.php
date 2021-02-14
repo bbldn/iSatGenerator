@@ -8,17 +8,17 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Collection;
 
 /**
- * @property integer category_id
- * @property integer language_id
- * @property string name
- * @property string description
- * @property string meta_title
- * @property string meta_description
- * @property string meta_keyword
+ * @property string|null name
  * @property Product[] products
+ * @property string|null meta_title
+ * @property string|null description
+ * @property string|null meta_keyword
+ * @property integer|null category_id
+ * @property integer|null language_id
+ * @property string|null meta_description
+ * @property ProductDiscount[] productsDiscounts
  * @property ProductDescription[] productsDescriptions
  * @property ProductDiscontinued[] productsDiscontinued
- * @property ProductDiscount[] productsDiscounts
  * @method static CategoryDescription|null find(integer $id)
  * @method static Collection|CategoryDescription[] all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
@@ -40,6 +40,15 @@ class CategoryDescription extends Model
 
     public const metaDescription = 'meta_description';
 
+    /** @var bool */
+    public $timestamps = false;
+
+    /** @var string */
+    protected $primaryKey = self::categoryId;
+
+    /** @var string */
+    protected $table = 'oc_category_description';
+
     /** @var string[] */
     protected $fillable = [
         self::name,
@@ -49,15 +58,6 @@ class CategoryDescription extends Model
         self::metaKeyword,
         self::metaDescription,
     ];
-
-    /** @var bool */
-    public $timestamps = false;
-
-    /** @var string */
-    protected $table = 'oc_category_description';
-
-    /** @var string */
-    protected $primaryKey = self::categoryId;
 
     /**
      * @return HasManyThrough
