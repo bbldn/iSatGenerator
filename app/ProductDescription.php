@@ -9,15 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 /**
- * @property string tag
- * @property string name
- * @property string meta_title
- * @property string description
- * @property integer product_id
- * @property integer language_id
- * @property string meta_keyword
+ * @property string|null tag
+ * @property string|null name
  * @property Product|null product
- * @property string meta_description
+ * @property string|null meta_title
+ * @property string|null description
+ * @property integer|null product_id
+ * @property integer|null language_id
+ * @property string|null meta_keyword
+ * @property string|null meta_description
  * @property ProductDiscount[] productDiscounts
  * @property ProductCategory[] productCategories
  * @property ProductDiscontinued|null productDiscontinued
@@ -44,6 +44,15 @@ class ProductDescription extends Model
 
     public const metaDescription = 'meta_description';
 
+    /** @var bool */
+    public $timestamps = false;
+
+    /** @var string */
+    protected $primaryKey = self::productId;
+
+    /** @var string */
+    protected $table = 'oc_product_description';
+
     /** @var string[] */
     protected $fillable = [
         self::tag,
@@ -54,15 +63,6 @@ class ProductDescription extends Model
         self::metaKeyword,
         self::metaDescription,
     ];
-
-    /** @var bool */
-    public $timestamps = false;
-
-    /** @var string */
-    protected $primaryKey = self::productId;
-
-    /** @var string */
-    protected $table = 'oc_product_description';
 
     /**
      * @return HasOne

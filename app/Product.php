@@ -115,6 +115,25 @@ class Product extends Model
     public const manufacturerId = 'manufacturer_id';
 
     /** @var string[] */
+    protected $dates = [
+        self::dateAdded,
+        self::dateModified,
+        self::dateAvailable,
+    ];
+
+    /** @var array<string, string> */
+    protected $casts = [
+        self::status => 'bool',
+        self::price => 'float',
+        self::width => 'float',
+        self::height => 'float',
+        self::weight => 'float',
+        self::length => 'float',
+        self::shipping => 'bool',
+        self::subtract => 'bool',
+    ];
+
+    /** @var string[] */
     protected $fillable = [
         self::ean,
         self::upc,
@@ -146,25 +165,6 @@ class Product extends Model
         self::weightClassId,
         self::stockStatusId,
         self::manufacturerId,
-    ];
-
-    /** @var string[] */
-    protected $dates = [
-        self::dateAdded,
-        self::dateModified,
-        self::dateAvailable,
-    ];
-
-    /** @var array */
-    protected $casts = [
-        self::status => 'bool',
-        self::price => 'float',
-        self::width => 'float',
-        self::height => 'float',
-        self::weight => 'float',
-        self::length => 'float',
-        self::shipping => 'bool',
-        self::subtract => 'bool',
     ];
 
     /** @var bool */

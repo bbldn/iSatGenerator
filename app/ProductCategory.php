@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 /**
- * @property bool main_category
- * @property integer product_id
- * @property integer category_id
  * @property Product|null product
  * @property Category|null category
+ * @property bool|null main_category
+ * @property integer|null product_id
+ * @property integer|null category_id
  * @property ProductDiscount[] productDiscounts
  * @property ProductDescription|null productDescription
  * @property ProductDiscontinued|null productDiscontinued
@@ -30,17 +30,6 @@ class ProductCategory extends Model
 
     public const mainCategory = 'main_category';
 
-    /** @var string[] */
-    protected $fillable = [
-        self::categoryId,
-        self::mainCategory,
-    ];
-
-    /** @var array */
-    protected $casts = [
-        self::mainCategory => 'bool',
-    ];
-
     /** @var bool */
     public $timestamps = false;
 
@@ -49,6 +38,17 @@ class ProductCategory extends Model
 
     /** @var string */
     protected $table = 'oc_product_to_category';
+
+    /** @var array<string, string> */
+    protected $casts = [
+        self::mainCategory => 'bool',
+    ];
+
+    /** @var string[] */
+    protected $fillable = [
+        self::categoryId,
+        self::mainCategory,
+    ];
 
     /**
      * @return HasOne

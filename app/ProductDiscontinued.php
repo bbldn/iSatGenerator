@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 /**
- * @property integer product_id
  * @property Product|null product
+ * @property integer|null product_id
  * @property string|null redirect_url
  * @property ProductCategory[] productCategories
  * @property ProductDiscount|null productDiscount
@@ -26,11 +26,6 @@ class ProductDiscontinued extends Model
 
     public const redirectUrl = 'redirect_url';
 
-    /** @var string[] */
-    protected $fillable = [
-        self::redirectUrl,
-    ];
-
     /** @var bool */
     public $timestamps = false;
 
@@ -39,6 +34,11 @@ class ProductDiscontinued extends Model
 
     /** @var string */
     protected $table = 'oc_product_discontinued';
+
+    /** @var string[] */
+    protected $fillable = [
+        self::redirectUrl,
+    ];
 
     /**
      * @return HasMany
