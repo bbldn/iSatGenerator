@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 /**
- * @property integer seo_url_id
- * @property integer store_id
- * @property integer language_id
- * @property string query
- * @property string keyword
+ * @property string|null query
+ * @property string|null keyword
+ * @property integer|null store_id
+ * @property integer|null seo_url_id
+ * @property integer|null language_id
  * @method static SeoUrl|null find(integer $id)
  * @method static Collection all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
@@ -19,18 +19,30 @@ use Illuminate\Support\Collection;
  */
 class SeoUrl extends Model
 {
-    /** @var string[] $fillable */
-    protected $fillable = [
-        'store_id', 'language_id',
-        'query', 'keyword',
-    ];
+    public const query = 'query';
 
-    /** @var bool $timestamps */
+    public const keyword = 'keyword';
+
+    public const storeId = 'store_id';
+
+    public const seoUrlId = 'seo_url_id';
+
+    public const languageId = 'language_id';
+
+    /** @var bool */
     public $timestamps = false;
 
-    /** @var string $table */
+    /** @var string */
     protected $table = 'oc_seo_url';
 
-    /** @var string $primaryKey */
-    protected $primaryKey = 'seo_url_id';
+    /** @var string */
+    protected $primaryKey = self::seoUrlId;
+
+    /** @var string[] */
+    protected $fillable = [
+        self::query,
+        self::keyword,
+        self::storeId,
+        self::languageId,
+    ];
 }
