@@ -2,32 +2,25 @@
 
 namespace App\Exceptions;
 
-use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
     /**
-     * @var string[] $dontReport
+     * @var string[]
+     * @psalm-var class-string
      */
     protected $dontReport = [
-        AuthorizationException::class,
-        HttpException::class,
-        ModelNotFoundException::class,
-        ValidationException::class,
+        \Illuminate\Validation\ValidationException::class,
+        \Illuminate\Auth\Access\AuthorizationException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        \Symfony\Component\HttpKernel\Exception\HttpException::class,
     ];
 
     /**
-     * @param  Throwable  $exception
-     * @return void
-     * @throws Exception
+     * {@inheritdoc}
      */
     public function report(Throwable $exception): void
     {
@@ -35,14 +28,10 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * @param  Request  $request
-     * @param  Throwable  $exception
-     * @return Response
-     *
-     * @throws Throwable
+     * {@inheritdoc}
      */
-    public function render($request, Throwable $exception): Response
+    public function render($request, Throwable $e): Response
     {
-        return parent::render($request, $exception);
+        return parent::render($request, $e);
     }
 }
