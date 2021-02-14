@@ -15,30 +15,37 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class GenerateHTMLCommand extends Command
 {
-    /** @var string $signature */
+    /** @var string */
     protected $signature = 'generate:html';
 
-    /** @var string $description */
+    /** @var string */
     protected $description = 'Generate HTML';
 
     /**
-     * @param GeneratorService $generatorService
-     * @param HTMLGenerator $generator
      * @param FileUploader $uploader
-     * @throws TransportExceptionInterface
+     * @param HTMLGenerator $generator
+     * @param GeneratorService $generatorService
      * @throws ClientExceptionInterface
+     * @throws FileUploaderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws FileUploaderException
+     * @throws TransportExceptionInterface
      */
-    public function handle(GeneratorService $generatorService, HTMLGenerator $generator, FileUploader $uploader): void
+    public function handle(
+        FileUploader $uploader,
+        HTMLGenerator $generator,
+        GeneratorService $generatorService
+    ): void
     {
         $generatorService->init();
         $data = $generatorService->getData();
 
         foreach (Store::groupsIds() as $groupId => $_) {
             $generator->generateAndSave($data, $groupId);
-            $uploader->send(storage_path("app/{$groupId}.html"), "/var/www/files/{$groupId}.html");
+            $uploader->send(
+                storage_path("app/{$groupId}.html"),
+                "/var/www/files/{$groupId}.html"
+            );
         }
     }
 }

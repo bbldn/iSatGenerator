@@ -15,30 +15,37 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class GenerateJSONCommand extends Command
 {
-    /** @var string $signature */
+    /** @var string */
     protected $signature = 'generate:json';
 
-    /** @var string $description */
+    /** @var string */
     protected $description = 'Generate JSON';
 
     /**
-     * @param GeneratorService $generatorService
-     * @param JSONGenerator $generator
      * @param FileUploader $uploader
-     * @throws TransportExceptionInterface
+     * @param JSONGenerator $generator
+     * @param GeneratorService $generatorService
      * @throws ClientExceptionInterface
+     * @throws FileUploaderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws FileUploaderException
+     * @throws TransportExceptionInterface
      */
-    public function handle(GeneratorService $generatorService, JSONGenerator $generator, FileUploader $uploader): void
+    public function handle(
+        FileUploader $uploader,
+        JSONGenerator $generator,
+        GeneratorService $generatorService
+    ): void
     {
         $generatorService->init();
         $data = $generatorService->getData();
 
         foreach (Store::groupsIds() as $groupId => $_) {
             $generator->generateAndSave($data, $groupId);
-            $uploader->send(storage_path("app/{$groupId}.json"), "/var/www/files/{$groupId}.json");
+            $uploader->send(
+                storage_path("app/{$groupId}.json"),
+                "/var/www/files/{$groupId}.json"
+            );
         }
     }
 }

@@ -16,31 +16,38 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class GeneratePDFCommand extends Command
 {
-    /** @var string $signature */
+    /** @var string */
     protected $signature = 'generate:pdf';
 
-    /** @var string $description */
+    /** @var string */
     protected $description = 'Generate PDF';
 
     /**
-     * @param GeneratorService $generatorService
-     * @param PDFGenerator $generator
      * @param FileUploader $uploader
-     * @throws MpdfException
-     * @throws TransportExceptionInterface
+     * @param PDFGenerator $generator
+     * @param GeneratorService $generatorService
      * @throws ClientExceptionInterface
+     * @throws FileUploaderException
+     * @throws MpdfException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws FileUploaderException
+     * @throws TransportExceptionInterface
      */
-    public function handle(GeneratorService $generatorService, PDFGenerator $generator, FileUploader $uploader): void
+    public function handle(
+        FileUploader $uploader,
+        PDFGenerator $generator,
+        GeneratorService $generatorService
+    ): void
     {
         $generatorService->init();
         $data = $generatorService->getData();
 
         foreach (Store::groupsIds() as $groupId => $_) {
             $generator->generateAndSave($data, $groupId);
-            $uploader->send(storage_path("app/{$groupId}.pdf"), "/var/www/files/{$groupId}.pdf");
+            $uploader->send(
+                storage_path("app/{$groupId}.pdf"),
+                "/var/www/files/{$groupId}.pdf"
+            );
         }
     }
 }

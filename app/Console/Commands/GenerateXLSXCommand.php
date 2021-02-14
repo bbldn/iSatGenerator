@@ -17,32 +17,39 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class GenerateXLSXCommand extends Command
 {
-    /** @var string $signature */
+    /** @var string */
     protected $signature = 'generate:xlsx';
 
-    /** @var string $description */
+    /** @var string */
     protected $description = 'Generate XLSX';
 
     /**
-     * @param GeneratorService $generatorService
-     * @param XLSXGenerator $generator
      * @param FileUploader $uploader
+     * @param XLSXGenerator $generator
+     * @param GeneratorService $generatorService
+     * @throws ClientExceptionInterface
+     * @throws FileUploaderException
      * @throws PhpSpreadsheetException
      * @throws PhpSpreadsheetWriterException
-     * @throws TransportExceptionInterface
-     * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws FileUploaderException
+     * @throws TransportExceptionInterface
      */
-    public function handle(GeneratorService $generatorService, XLSXGenerator $generator, FileUploader $uploader): void
+    public function handle(
+        FileUploader $uploader,
+        XLSXGenerator $generator,
+        GeneratorService $generatorService
+    ): void
     {
         $generatorService->init();
         $data = $generatorService->getData();
 
         foreach (Store::groupsIds() as $groupId => $_) {
             $generator->generateAndSave($data, $groupId);
-            $uploader->send(storage_path("app/{$groupId}.xlsx"), "/var/www/files/{$groupId}.xlsx");
+            $uploader->send(
+                storage_path("app/{$groupId}.xlsx"),
+                "/var/www/files/{$groupId}.xlsx"
+            );
         }
     }
 }

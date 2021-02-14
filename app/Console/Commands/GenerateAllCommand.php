@@ -19,32 +19,33 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class GenerateAllCommand extends Command
 {
-    /** @var string $signature */
+    /** @var string */
     protected $signature = 'generate:all';
 
-    /** @var string $description */
+    /** @var string */
     protected $description = 'Generate All(JSON, HTML, XLSX, PDF)';
 
     /**
-     * @param GeneratorService $generatorService
+     * @param FileUploader $uploader
+     * @param PDFGenerator $PDFGenerator
      * @param JSONGenerator $JSONGenerator
      * @param XLSXGenerator $XLSXGenerator
      * @param HTMLGenerator $HTMLGenerator
-     * @param PDFGenerator $PDFGenerator
-     * @param FileUploader $uploader
-     * @throws TransportExceptionInterface
+     * @param GeneratorService $generatorService
      * @throws ClientExceptionInterface
+     * @throws FileUploaderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws FileUploaderException
+     * @throws TransportExceptionInterface
      */
     public function handle(
-        GeneratorService $generatorService,
+        FileUploader $uploader,
+        PDFGenerator $PDFGenerator,
         JSONGenerator $JSONGenerator,
         XLSXGenerator $XLSXGenerator,
         HTMLGenerator $HTMLGenerator,
-        PDFGenerator $PDFGenerator,
-        FileUploader $uploader): void
+        GeneratorService $generatorService
+    ): void
     {
         $generatorService->init();
         $data = $generatorService->getData();
@@ -60,7 +61,10 @@ class GenerateAllCommand extends Command
             foreach ($array as $extension => $generator) {
                 /** @var GeneratorInterface $generator */
                 $generator->generateAndSave($data, $groupId);
-                $uploader->send(storage_path("app/{$groupId}.{$extension}"), "/var/www/files/{$groupId}.{$extension}");
+                $uploader->send(
+                    storage_path("app/{$groupId}.{$extension}"),
+                    "/var/www/files/{$groupId}.{$extension}"
+                );
             }
         }
     }
