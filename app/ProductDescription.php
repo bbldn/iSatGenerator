@@ -9,48 +9,67 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 /**
+ * @property string tag
+ * @property string name
+ * @property string meta_title
+ * @property string description
  * @property integer product_id
  * @property integer language_id
- * @property string name
- * @property string description
- * @property string tag
- * @property string meta_title
- * @property string meta_description
  * @property string meta_keyword
  * @property Product|null product
+ * @property string meta_description
  * @property ProductDiscount[] productDiscounts
- * @property ProductDiscontinued|null productDiscontinued
  * @property ProductCategory[] productCategories
+ * @property ProductDiscontinued|null productDiscontinued
  * @method static Product|null find(integer $id)
+ * @method static Product create(array $attributes)
  * @method static Collection all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
- * @method static Product create(array $attributes)
  */
 class ProductDescription extends Model
 {
-    /** @var string[] $fillable */
+    public const tag = 'tag';
+
+    public const name = 'name';
+
+    public const productId = 'product_id';
+
+    public const metaTitle = 'meta_title';
+
+    public const languageId = 'language_id';
+
+    public const description = 'description';
+
+    public const metaKeyword = 'meta_keyword';
+
+    public const metaDescription = 'meta_description';
+
+    /** @var string[] */
     protected $fillable = [
-        'language_id', 'name',
-        'description', 'tag',
-        'meta_title', 'meta_description',
-        'meta_keyword'
+        self::tag,
+        self::name,
+        self::metaTitle,
+        self::languageId,
+        self::description,
+        self::metaKeyword,
+        self::metaDescription,
     ];
 
-    /** @var bool $timestamps */
+    /** @var bool */
     public $timestamps = false;
 
-    /** @var string $table */
+    /** @var string */
     protected $table = 'oc_product_description';
 
-    /** @var string $primaryKey */
-    protected $primaryKey = 'product_id';
+    /** @var string */
+    protected $primaryKey = self::productId;
 
     /**
      * @return HasOne
      */
     public function product(): HasOne
     {
-        return $this->hasOne(Product::class, 'product_id', 'product_id');
+        return $this->hasOne(Product::class, Product::productId, Product::productId);
     }
 
     /**
@@ -58,7 +77,7 @@ class ProductDescription extends Model
      */
     public function productDescription(): HasOne
     {
-        return $this->hasOne(ProductDescription::class, 'product_id', 'product_id');
+        return $this->hasOne(ProductDescription::class, Product::productId, Product::productId);
     }
 
     /**
@@ -66,7 +85,7 @@ class ProductDescription extends Model
      */
     public function productDiscounts(): HasMany
     {
-        return $this->hasMany(ProductDiscount::class, 'product_id', 'product_id');
+        return $this->hasMany(ProductDiscount::class, Product::productId, Product::productId);
     }
 
     /**
@@ -74,6 +93,6 @@ class ProductDescription extends Model
      */
     public function productCategories(): HasMany
     {
-        return $this->hasMany(ProductCategory::class, 'product_id', 'product_id');
+        return $this->hasMany(ProductCategory::class, Product::productId, Product::productId);
     }
 }
