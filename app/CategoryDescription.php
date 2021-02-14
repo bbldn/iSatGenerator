@@ -26,21 +26,38 @@ use Illuminate\Support\Collection;
  */
 class CategoryDescription extends Model
 {
-    /** @var string[] $fillable */
+    public const name = 'name';
+
+    public const metaTitle = 'meta_title';
+
+    public const languageId = 'language_id';
+
+    public const categoryId = 'category_id';
+
+    public const description = 'description';
+
+    public const metaKeyword = 'meta_keyword';
+
+    public const metaDescription = 'meta_description';
+
+    /** @var string[] */
     protected $fillable = [
-        'language_id', 'name',
-        'description', 'meta_title',
-        'meta_description', 'meta_keyword'
+        self::name,
+        self::metaTitle,
+        self::languageId,
+        self::description,
+        self::metaKeyword,
+        self::metaDescription,
     ];
 
-    /** @var bool $timestamps */
+    /** @var bool */
     public $timestamps = false;
 
-    /** @var string $table */
+    /** @var string */
     protected $table = 'oc_category_description';
 
-    /** @var string $primaryKey */
-    protected $primaryKey = 'category_id';
+    /** @var string */
+    protected $primaryKey = self::categoryId;
 
     /**
      * @return HasManyThrough
@@ -50,10 +67,10 @@ class CategoryDescription extends Model
         return $this->hasManyThrough(
             Product::class,
             ProductCategory::class,
-            'category_id',
-            'product_id',
-            'product_id',
-            'category_id'
+            self::categoryId,
+            Product::productId,
+            Product::productId,
+            self::categoryId
         );
     }
 
@@ -65,10 +82,10 @@ class CategoryDescription extends Model
         return $this->hasManyThrough(
             ProductDescription::class,
             ProductCategory::class,
-            'category_id',
-            'product_id',
-            'product_id',
-            'category_id'
+            self::categoryId,
+            Product::productId,
+            Product::productId,
+            self::categoryId
         );
     }
 
@@ -80,10 +97,10 @@ class CategoryDescription extends Model
         return $this->hasManyThrough(
             ProductDiscontinued::class,
             ProductCategory::class,
-            'category_id',
-            'product_id',
-            'product_id',
-            'category_id'
+            self::categoryId,
+            Product::productId,
+            Product::productId,
+            self::categoryId
         );
     }
 
@@ -95,10 +112,10 @@ class CategoryDescription extends Model
         return $this->hasManyThrough(
             ProductDiscount::class,
             ProductCategory::class,
-            'category_id',
-            'product_id',
-            'product_id',
-            'category_id'
+            self::categoryId,
+            Product::productId,
+            Product::productId,
+            self::categoryId
         );
     }
 }

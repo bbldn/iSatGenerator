@@ -35,33 +35,58 @@ use Illuminate\Support\Collection;
  */
 class Category extends Model
 {
-    /** @var bool $timestamps */
+    public const top = 'top';
+
+    public const image = 'image';
+
+    public const column = 'column';
+
+    public const status = 'status';
+
+    public const parentId = 'parent_id';
+
+    public const sortOrder = 'sort_order';
+
+    public const dateAdded = 'date_added';
+
+    public const categoryId = 'category_id';
+
+    public const dateModified = 'date_modified';
+
+    public const pageGroupLinks = 'page_group_links';
+
+    /** @var bool */
     public $timestamps = false;
 
-    /** @var string $table */
+    /** @var string */
     protected $table = 'oc_category';
 
-    /** @var string $primaryKey */
-    protected $primaryKey = 'category_id';
+    /** @var string */
+    protected $primaryKey = self::categoryId;
 
-    /** @var string[] $fillable */
+    /** @var string[] */
     protected $fillable = [
-        'image', 'parent_id', 'top',
-        'column', 'sort_order', 'status',
-        'page_group_links', 'date_added',
-        'date_modified',
+        self::top,
+        self::image,
+        self::column,
+        self::status,
+        self::parentId,
+        self::sortOrder,
+        self::dateAdded,
+        self::dateModified,
+        self::pageGroupLinks,
     ];
 
-    /** @var string[] $dates */
+    /** @var string[] */
     protected $dates = [
-        'date_added',
-        'date_modified',
+        self::dateAdded,
+        self::dateModified,
     ];
 
-    /** @var array $casts */
+    /** @var array */
     protected $casts = [
-        'top' => 'bool',
-        'status' => 'bool',
+        self::top => 'bool',
+        self::status => 'bool',
     ];
 
     /**
@@ -69,7 +94,7 @@ class Category extends Model
      */
     public function parent(): HasOne
     {
-        return $this->hasOne(Category::class, 'category_id', 'parent_id');
+        return $this->hasOne(Category::class, self::categoryId, self::parentId);
     }
 
     /**
@@ -77,7 +102,7 @@ class Category extends Model
      */
     public function categoryDescription(): HasOne
     {
-        return $this->hasOne(CategoryDescription::class, 'category_id', 'category_id');
+        return $this->hasOne(CategoryDescription::class, self::categoryId, self::categoryId);
     }
 
     /**
@@ -85,7 +110,7 @@ class Category extends Model
      */
     public function productsCategories(): HasMany
     {
-        return $this->hasMany(ProductCategory::class, 'category_id', 'category_id');
+        return $this->hasMany(ProductCategory::class, self::categoryId, self::categoryId);
     }
 
     /**
@@ -96,10 +121,10 @@ class Category extends Model
         return $this->hasManyThrough(
             Product::class,
             ProductCategory::class,
-            'category_id',
-            'product_id',
-            'product_id',
-            'category_id'
+            self::categoryId,
+            Product::productId,
+            Product::productId,
+            self::categoryId
         );
     }
 
@@ -111,10 +136,10 @@ class Category extends Model
         return $this->hasManyThrough(
             ProductDescription::class,
             ProductCategory::class,
-            'category_id',
-            'product_id',
-            'product_id',
-            'category_id'
+            self::categoryId,
+            Product::productId,
+            Product::productId,
+            self::categoryId
         );
     }
 
@@ -126,10 +151,10 @@ class Category extends Model
         return $this->hasManyThrough(
             ProductDiscontinued::class,
             ProductCategory::class,
-            'category_id',
-            'product_id',
-            'product_id',
-            'category_id'
+            self::categoryId,
+            Product::productId,
+            Product::productId,
+            self::categoryId
         );
     }
 
@@ -141,10 +166,10 @@ class Category extends Model
         return $this->hasManyThrough(
             ProductDiscount::class,
             ProductCategory::class,
-            'category_id',
-            'product_id',
-            'product_id',
-            'category_id'
+            self::categoryId,
+            Product::productId,
+            Product::productId,
+            self::categoryId
         );
     }
 }

@@ -52,6 +52,8 @@ use Illuminate\Support\Collection;
  */
 class Product extends Model
 {
+    public const productId = 'product_id';
+
     /** @var string[] $fillable */
     protected $fillable = [
         'model', 'sku', 'upc',
