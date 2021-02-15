@@ -3,12 +3,14 @@
 namespace App\Repositories;
 
 use App\Category;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class CategoryRepository
 {
     /**
      * @return Collection|Category[]
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     public function findParentCategoriesWithCategoryDescription(): Collection
     {
@@ -21,6 +23,8 @@ class CategoryRepository
     /**
      * @param int $categoryId
      * @return Collection|Category[]
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     public function findByParentId(int $categoryId): Collection
     {

@@ -11,8 +11,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class XLSXGenerator implements GeneratorInterface
 {
-    /** @var array */
-    private $currency;
+    private array $currency;
 
     /**
      * @param Worksheet $sheet

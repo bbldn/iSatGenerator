@@ -3,13 +3,15 @@
 namespace App\Repositories;
 
 use App\ProductCategory;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class ProductCategoryRepository
 {
     /**
      * @param int[] $ids
      * @return Collection|ProductCategory[]
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     public function findByCategoryIds(array $ids): Collection
     {

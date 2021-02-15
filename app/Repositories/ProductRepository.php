@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Product;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class ProductRepository
 {
@@ -11,6 +11,8 @@ class ProductRepository
      * @param int[] $ids
      * @param float $price
      * @return Collection|Product[]
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     public function findByIdsAndPrice(array $ids, float $price): Collection
     {

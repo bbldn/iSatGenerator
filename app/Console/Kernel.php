@@ -8,7 +8,7 @@ class Kernel extends ConsoleKernel
 {
     /**
      * @var string[]
-     * @psalm-var class-string
+     * @psalm-var class-string[]
      */
     protected $commands = [
         \Illuminate\Console\KeyGenerateCommand::class,

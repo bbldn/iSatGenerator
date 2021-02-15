@@ -10,7 +10,7 @@ class Handler extends ExceptionHandler
 {
     /**
      * @var string[]
-     * @psalm-var class-string
+     * @psalm-var class-string[]
      */
     protected $dontReport = [
         \Illuminate\Validation\ValidationException::class,
