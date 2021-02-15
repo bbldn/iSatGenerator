@@ -94,6 +94,7 @@ class GeneratorService
                 continue;
             }
 
+            /** @var Category[] $categories */
             $categories = $this->categoryRepository->findByParentId($category->category_id)->push($category);
             $categoriesIds = array_map(fn(Category $category) => $category->category_id, $categories);
 
