@@ -24,9 +24,7 @@ class FileUploader
      * FileUploader constructor.
      * @param HttpClientInterface $httpClient
      */
-    public function __construct(
-        HttpClientInterface $httpClient
-    )
+    public function __construct(HttpClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
     }
@@ -87,7 +85,7 @@ class FileUploader
      * @throws TransportExceptionInterface
      * @throws FileUploaderException
      */
-    protected function validate(ResponseInterface $response): void
+    private function validate(ResponseInterface $response): void
     {
         if (200 !== $response->getStatusCode()) {
             throw new FileUploaderException('Response is not 200');

@@ -37,8 +37,7 @@ class GenerateHTMLCommand extends Command
         GeneratorService $generatorService
     ): void
     {
-        $generatorService->init();
-        $data = $generatorService->getData();
+        $data = $generatorService->init()->getData();
 
         foreach (StoreContext::groupsIds() as $groupId => $_) {
             $generator->generateAndSave($data, $groupId);

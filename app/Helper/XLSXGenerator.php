@@ -2,6 +2,7 @@
 
 namespace App\Helper;
 
+use App\Currency;
 use PhpOffice\PhpSpreadsheet\Exception as PhpSpreadsheetException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -11,13 +12,25 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class XLSXGenerator implements GeneratorInterface
 {
+    /** @var array{
+     *      status?: int,
+     *      code?: string,
+     *      title?: string,
+     *      value?: string,
+     *      symbol_left?: string,
+     *      currency_id?: integer,
+     *      symbol_right?: string,
+     *      decimal_place?: string,
+     *      date_modified?: \DateTime,
+     * }
+     */
     private array $currency;
 
     /**
      * @param Worksheet $sheet
      * @param int $customerGroupId
      */
-    protected function fillHead(Worksheet $sheet, int $customerGroupId): void
+    private function fillHead(Worksheet $sheet, int $customerGroupId): void
     {
         $sheet->setTitle('Цены ' . date('Y.m.d H.i.s'));
         $sheet->setCellValue('A1', 'Наименование');
@@ -47,7 +60,7 @@ class XLSXGenerator implements GeneratorInterface
      * @param int $line
      * @throws PhpSpreadsheetException
      */
-    protected function fillCategory(Worksheet $sheet, array $category, int $customerGroupId, int $line): void
+    private function fillCategory(Worksheet $sheet, array $category, int $customerGroupId, int $line): void
     {
         if ($customerGroupId > 1) {
             $range = 'A' . $line . ':D' . ($line + 1);
@@ -60,10 +73,10 @@ class XLSXGenerator implements GeneratorInterface
         $sheet->setCellValue("A{$line}", $category['name']);
         $sheet->getStyle("A{$line}")->applyFromArray([
             'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
                 'wrapText' => true,
-            ]
+                'vertical' => Alignment::VERTICAL_CENTER,
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
         ]);
     }
 
@@ -73,7 +86,7 @@ class XLSXGenerator implements GeneratorInterface
      * @param int $customerGroupId
      * @param int $line
      */
-    protected function fillProduct(Worksheet $sheet, array $product, int $customerGroupId, int $line): void
+    private function fillProduct(Worksheet $sheet, array $product, int $customerGroupId, int $line): void
     {
         $sheet->setCellValue("A{$line}", $product['name']);
         $sheet->setCellValue("B{$line}", $product['url']);
@@ -81,20 +94,21 @@ class XLSXGenerator implements GeneratorInterface
             "C{$line}",
             sprintf(
                 '%s%s%s',
-                $this->currency['symbol_left'],
-                round($product['retail'] * $this->currency['value'], $this->currency['decimal_place']),
-                $this->currency['symbol_right']
+                $this->currency[Currency::symbolLeft],
+                round($product['retail'] * $this->currency[Currency::value], $this->currency[Currency::decimalPlace]),
+                $this->currency[Currency::symbolRight]
             )
         );
+
         switch ($customerGroupId) {
             case 2:
                 $sheet->setCellValue(
                     "D{$line}",
                     sprintf(
                         '%s%s%s',
-                        $this->currency['symbol_left'],
-                        round($product['dealer'] * $this->currency['value'], $this->currency['decimal_place']),
-                        $this->currency['symbol_right']
+                        $this->currency[Currency::symbolLeft],
+                        round($product['dealer'] * $this->currency[Currency::value], $this->currency[Currency::decimalPlace]),
+                        $this->currency[Currency::symbolRight]
                     )
                 );
                 break;
@@ -103,9 +117,9 @@ class XLSXGenerator implements GeneratorInterface
                     "D{$line}",
                     sprintf(
                         '%s%s%s',
-                        $this->currency['symbol_left'],
-                        round($product['wholesale'] * $this->currency['value'], $this->currency['decimal_place']),
-                        $this->currency['symbol_right']
+                        $this->currency[Currency::symbolLeft],
+                        round($product['wholesale'] * $this->currency[Currency::value], $this->currency[Currency::decimalPlace]),
+                        $this->currency[Currency::symbolRight]
                     )
                 );
                 break;
@@ -114,9 +128,9 @@ class XLSXGenerator implements GeneratorInterface
                     "D{$line}",
                     sprintf(
                         '%s%s%s',
-                        $this->currency['symbol_left'],
-                        round($product['partner'] * $this->currency['value'], $this->currency['decimal_place']),
-                        $this->currency['symbol_right']
+                        $this->currency[Currency::symbolLeft],
+                        round($product['partner'] * $this->currency[Currency::value], $this->currency[Currency::decimalPlace]),
+                        $this->currency[Currency::symbolRight]
                     )
                 );
                 break;
@@ -129,7 +143,7 @@ class XLSXGenerator implements GeneratorInterface
      * @throws PhpSpreadsheetException
      * @throws PhpSpreadsheetWriterException
      */
-    protected function createXLSX(array $data, int $customerGroupId)
+    private function createXLSX(array $data, int $customerGroupId): void
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();

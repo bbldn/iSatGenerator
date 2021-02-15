@@ -47,14 +47,13 @@ class GenerateAllCommand extends Command
         GeneratorService $generatorService
     ): void
     {
-        $generatorService->init();
-        $data = $generatorService->getData();
+        $data = $generatorService->init()->getData();
 
         $array = [
+            'pdf' => $PDFGenerator,
             'json' => $JSONGenerator,
             'xlsx' => $XLSXGenerator,
             'html' => $HTMLGenerator,
-            'pdf' => $PDFGenerator,
         ];
 
         foreach (StoreContext::groupsIds() as $groupId => $_) {

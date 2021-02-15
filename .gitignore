@@ -1,6 +1,11 @@
-/vendor
+###> ide ###
 /.idea
+/*.code-workspace
+###< ide ###
+###> laravel ###
+/vendor
 Homestead.json
 Homestead.yaml
 .env
 .phpunit.result.cache
+###< laravel ###

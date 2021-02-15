@@ -62,9 +62,9 @@ class GeneratorService
     }
 
     /**
-     *
+     * @return $this
      */
-    public function init(): void
+    public function init(): self
     {
         if (null === $this->seoUrls) {
             $this->seoUrls = [];
@@ -79,6 +79,8 @@ class GeneratorService
                 $this->productsDiscontinued[$productDiscontinued->product_id] = null;
             }
         }
+
+        return $this;
     }
 
     /**
@@ -94,12 +96,6 @@ class GeneratorService
                 continue;
             }
 
-            /** @var Category[] $categories */
-            $categories = $this->categoryRepository->findByParentId($category->category_id)->push($category);
-            $categoriesIds = array_map(fn(Category $category) => $category->category_id, $categories);
-
-            $subCategoriesIds = $this->productCategoryRepository->findByCategoryIds($categoriesIds);
-
             $key = "category_id={$category->category_id}";
             if (true === key_exists($key, $this->seoUrls)) {
                 $url = sprintf("{$this->siteUrl}/%s", $this->seoUrls[$key]);
@@ -107,6 +103,10 @@ class GeneratorService
                 $url = "{$this->siteUrl}/index.php?route=product/category&category_id={$category->category_id}";
             }
 
+            /** @var Category[] $categories */
+            $categories = $this->categoryRepository->findByParentId($category->category_id)->push($category);
+            $categoriesIds = array_map(fn(Category $category) => $category->category_id, $categories);
+            $subCategoriesIds = $this->productCategoryRepository->findByCategoryIds($categoriesIds);
             $resultCategories[] = [
                 'url' => $url,
                 'category_id' => $category->category_id,
@@ -115,41 +115,15 @@ class GeneratorService
             ];
         }
 
-        $currency = array_map(fn(Currency $currency) => $currency->toArray(), Currency::all());
+        $currency = [];
+        foreach (Currency::all() as $item) {
+            $currency[$item->code] = $item->toArray();
+        }
 
         return [
             'currency' => $currency,
             'categories' => $resultCategories,
         ];
-    }
-
-    /**
-     *
-     */
-    protected function loadProductsDiscontinued(): void
-    {
-        if (count($this->productsDiscontinued) > 0) {
-            return;
-        }
-
-        foreach (ProductDiscontinued::all() as $productDiscontinued) {
-            /** @var ProductDiscontinued $productDiscontinued */
-            $this->productsDiscontinued[$productDiscontinued->product_id] = null;
-        }
-    }
-
-    /**
-     *
-     */
-    protected function loadSeoUrl(): void
-    {
-        if (count($this->seoUrls) > 0) {
-            return;
-        }
-
-        foreach (SeoUrl::all() as $seoUrl) {
-            $this->seoUrls[$seoUrl->query] = $seoUrl->keyword;
-        }
     }
 
     /**
