@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
  * @property integer|null seo_url_id
  * @property integer|null language_id
  * @method static SeoUrl|null find(integer $id)
- * @method static Collection all(array $columns = ['*'])
+ * @method static Collection|SeoUrl[] all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static SeoUrl create(array $attributes)
  */

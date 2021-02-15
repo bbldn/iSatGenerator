@@ -20,9 +20,9 @@ class JSONGenerator implements GeneratorInterface
         unset($data['currency']);
 
         $pricesForDo = [];
-        $pricesForRemove = Store::groupsIds();
+        $pricesForRemove = StoreContext::groupsIds();
         foreach ($pricesForRemove as $id => $_) {
-            if ($id === $customerGroupId || $id === Store::defaultGroupId()) {
+            if ($id === $customerGroupId || $id === StoreContext::defaultGroupId()) {
                 $pricesForDo[] = $pricesForRemove[$id];
                 unset($pricesForRemove[$id]);
             }

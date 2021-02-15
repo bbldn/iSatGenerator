@@ -12,8 +12,8 @@ class HTMLGenerator implements GeneratorInterface
      */
     public function generateAndSave(array $data, int $customerGroupId): void
     {
-        $data['customerGroupId'] = $customerGroupId;
         $data['now'] = date('Y-m-d H:i:s');
+        $data['customerGroupId'] = $customerGroupId;
         if ($customerGroupId > 1) {
             $data['currency'] = $data['currency']['USD'];
         } else {

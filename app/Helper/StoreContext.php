@@ -2,7 +2,7 @@
 
 namespace App\Helper;
 
-class Store
+class StoreContext
 {
     /**
      * @return int
@@ -13,10 +13,15 @@ class Store
     }
 
     /**
-     * @return array
+     * @return array<int, string>
      */
     public static function groupsIds(): array
     {
-        return [1 => 'retail', 2 => 'dealer', 3 => 'wholesale', 4 => 'partner',];
+        return [
+            1 => 'retail',
+            2 => 'dealer',
+            4 => 'partner',
+            3 => 'wholesale',
+        ];
     }
 }

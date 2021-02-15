@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
  * @property ProductDescription|null productDescription
  * @method static Product|null find(integer $id)
  * @method static Product create(array $attributes)
- * @method static Collection all(array $columns = ['*'])
+ * @method static Collection|ProductDiscontinued all(array $columns = ['*'])
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
  */
 class ProductDiscontinued extends Model

@@ -114,6 +114,8 @@ class Product extends Model
 
     public const manufacturerId = 'manufacturer_id';
 
+    public const productDescription = 'productDescription';
+
     /** @var string[] */
     protected $dates = [
         self::dateAdded,

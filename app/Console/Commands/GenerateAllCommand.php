@@ -8,7 +8,7 @@ use App\Helper\GeneratorInterface;
 use App\Helper\HTMLGenerator;
 use App\Helper\JSONGenerator;
 use App\Helper\PDFGenerator;
-use App\Helper\Store;
+use App\Helper\StoreContext;
 use App\Helper\XLSXGenerator;
 use App\Services\GeneratorService;
 use Illuminate\Console\Command;
@@ -57,7 +57,7 @@ class GenerateAllCommand extends Command
             'pdf' => $PDFGenerator,
         ];
 
-        foreach (Store::groupsIds() as $groupId => $_) {
+        foreach (StoreContext::groupsIds() as $groupId => $_) {
             foreach ($array as $extension => $generator) {
                 /** @var GeneratorInterface $generator */
                 $generator->generateAndSave($data, $groupId);

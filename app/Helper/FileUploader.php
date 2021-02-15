@@ -3,7 +3,6 @@
 namespace App\Helper;
 
 use App\Exceptions\FileUploaderException;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Component\Mime\Part\Multipart\FormDataPart;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -15,26 +14,43 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class FileUploader
 {
-    /** @var HttpClientInterface $httpClient */
-    protected $httpClient;
+    private string $url;
 
-    /** @var string $url */
-    protected $url;
+    private string $token;
 
-    /** @var string $token */
-    protected $token;
+    private HttpClientInterface $httpClient;
 
     /**
      * FileUploader constructor.
      * @param HttpClientInterface $httpClient
-     * @param string $url
-     * @param string $token
      */
-    public function __construct(HttpClientInterface $httpClient, string $url, string $token)
+    public function __construct(
+        HttpClientInterface $httpClient
+    )
     {
         $this->httpClient = $httpClient;
+    }
+
+    /**
+     * @param string $url
+     * @return FileUploader
+     */
+    public function setUrl(string $url): self
+    {
         $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * @param string $token
+     * @return FileUploader
+     */
+    public function setToken(string $token): self
+    {
         $this->token = $token;
+
+        return $this;
     }
 
     /**
@@ -56,8 +72,8 @@ class FileUploader
         ]);
 
         $response = $this->httpClient->request('POST', $this->url, [
-            'headers' => $formData->getPreparedHeaders()->toArray(),
             'body' => $formData->bodyToIterable(),
+            'headers' => $formData->getPreparedHeaders()->toArray(),
         ]);
 
         $this->validate($response);

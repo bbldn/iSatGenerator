@@ -4,32 +4,61 @@ namespace App\Services;
 
 use App\Category;
 use App\Currency;
-use App\Helper\Store;
-use App\Product;
+use App\Helper\StoreContext;
 use App\ProductCategory;
 use App\ProductDiscontinued;
-use App\ProductDiscount;
+use App\Repositories\CategoryRepository;
+use App\Repositories\ProductCategoryRepository;
+use App\Repositories\ProductDiscountRepository;
+use App\Repositories\ProductRepository;
 use App\SeoUrl;
 use Illuminate\Support\Collection;
 
-class GeneratorService extends Service
+class GeneratorService
 {
-    /** @var array $productsDiscontinued */
-    protected $productsDiscontinued = [];
+    private string $siteUrl;
 
-    /** @var array $seoUrls */
-    protected $seoUrls = [];
+    private ?array $seoUrls = null;
 
-    /** @var string $siteUrl */
-    protected $siteUrl;
+    private ?array $productsDiscontinued = null;
+
+    private ProductRepository $productRepository;
+
+    private CategoryRepository $categoryRepository;
+
+    private ProductCategoryRepository $productCategoryRepository;
+
+    private ProductDiscountRepository $productDiscountRepository;
 
     /**
-     * ProductService constructor.
-     * @param string $siteUrl
+     * GeneratorService constructor.
+     * @param ProductRepository $productRepository
+     * @param CategoryRepository $categoryRepository
+     * @param ProductCategoryRepository $productCategoryRepository
+     * @param ProductDiscountRepository $productDiscountRepository
      */
-    public function __construct(string $siteUrl)
+    public function __construct(
+        ProductRepository $productRepository,
+        CategoryRepository $categoryRepository,
+        ProductCategoryRepository $productCategoryRepository,
+        ProductDiscountRepository $productDiscountRepository
+    )
+    {
+        $this->productRepository = $productRepository;
+        $this->categoryRepository = $categoryRepository;
+        $this->productCategoryRepository = $productCategoryRepository;
+        $this->productDiscountRepository = $productDiscountRepository;
+    }
+
+    /**
+     * @param string $siteUrl
+     * @return GeneratorService
+     */
+    public function setSiteUrl(string $siteUrl): self
     {
         $this->siteUrl = $siteUrl;
+
+        return $this;
     }
 
     /**
@@ -37,8 +66,19 @@ class GeneratorService extends Service
      */
     public function init(): void
     {
-        $this->loadProductsDiscontinued();
-        $this->loadSeoUrl();
+        if (null === $this->seoUrls) {
+            $this->seoUrls = [];
+            foreach (SeoUrl::all() as $seoUrl) {
+                $this->seoUrls[$seoUrl->query] = $seoUrl->keyword;
+            }
+        }
+
+        if (null === $this->productsDiscontinued) {
+            $this->productsDiscontinued = [];
+            foreach (ProductDiscontinued::all() as $productDiscontinued) {
+                $this->productsDiscontinued[$productDiscontinued->product_id] = null;
+            }
+        }
     }
 
     /**
@@ -46,11 +86,7 @@ class GeneratorService extends Service
      */
     public function getData(): array
     {
-        /** @var Collection|Category[] $mainCategories */
-        $mainCategories = Category::where('parent_id', 0)
-            ->where('status', true)
-            ->with('categoryDescription')
-            ->get();
+        $mainCategories = $this->categoryRepository->findParentCategoriesWithCategoryDescription();
 
         $resultCategories = [];
         foreach ($mainCategories as $category) {
@@ -58,13 +94,10 @@ class GeneratorService extends Service
                 continue;
             }
 
-            $categories = Category::where('parent_id', $category->category_id)
-                ->get(['category_id'])
-                ->push($category);
+            $categories = $this->categoryRepository->findByParentId($category->category_id)->push($category);
+            $categoriesIds = array_map(fn(Category $category) => $category->category_id, $categories);
 
-            $categoriesIds = $this->getColumn($categories, 'category_id');
-            /* @noinspection PhpUndefinedMethodInspection */
-            $subCategoriesIds = ProductCategory::whereIn('category_id', $categoriesIds)->get();
+            $subCategoriesIds = $this->productCategoryRepository->findByCategoryIds($categoriesIds);
 
             $key = "category_id={$category->category_id}";
             if (true === key_exists($key, $this->seoUrls)) {
@@ -74,21 +107,18 @@ class GeneratorService extends Service
             }
 
             $resultCategories[] = [
+                'url' => $url,
                 'category_id' => $category->category_id,
                 'name' => $category->categoryDescription->name,
-                'url' => $url,
                 'products' => $this->getProductsByProductsCategories($subCategoriesIds),
             ];
         }
 
-        $currency = [];
-        foreach (Currency::all() as $item) {
-            $currency[$item->code] = $item->toArray();
-        }
+        $currency = array_map(fn(Currency $currency) => $currency->toArray(), Currency::all());
 
         return [
-            'categories' => $resultCategories,
             'currency' => $currency,
+            'categories' => $resultCategories,
         ];
     }
 
@@ -117,7 +147,6 @@ class GeneratorService extends Service
         }
 
         foreach (SeoUrl::all() as $seoUrl) {
-            /** @var SeoUrl $seoUrl */
             $this->seoUrls[$seoUrl->query] = $seoUrl->keyword;
         }
     }
@@ -128,8 +157,8 @@ class GeneratorService extends Service
      */
     protected function getProductsByProductsCategories(Collection $productCategories): array
     {
-        $mainCategories = [];
         $productIds = [];
+        $mainCategories = [];
 
         foreach ($productCategories as $item) {
             $productIds[] = $item->product_id;
@@ -138,13 +167,8 @@ class GeneratorService extends Service
             }
         }
 
-        /* @noinspection PhpUndefinedMethodInspection */
-        /** @var Collection|Product[] $products */
-        $products = Product::whereIn('product_id', $this->getColumn($productCategories, 'product_id'))
-            ->orderBy('sort_order')
-            ->with('productDescription')
-            ->where('price', '>', 0.0)
-            ->get();
+        $productIds = array_map(fn(ProductCategory $productCategory) => $productCategory->product_id, $productCategories);
+        $products = $this->productRepository->findByIdsAndPrice($productIds, 0.0);
 
         $result = [];
         foreach ($products as $product) {
@@ -160,11 +184,11 @@ class GeneratorService extends Service
             $key = "product_id={$product->product_id}";
             if (true === key_exists($key, $this->seoUrls)) {
                 if (true === key_exists($product->product_id, $mainCategories)) {
-                    $query = 'category_id=' . $mainCategories[$product->product_id];
+                    $query = "category_id={$mainCategories[$product->product_id]}";
 
                     if (true === key_exists($query, $this->seoUrls)) {
                         $categoryUrl = $this->seoUrls[$query];
-                        $url = sprintf("{$this->siteUrl}/%s/%s", $categoryUrl, $this->seoUrls[$key]);
+                        $url = "{$this->siteUrl}/{$categoryUrl}/{$this->seoUrls[$key]}";
                     }
                 }
             }
@@ -174,9 +198,9 @@ class GeneratorService extends Service
             }
 
             $item = [
+                'url' => $url,
                 'product_id' => $product->product_id,
                 'name' => $product->productDescription->name,
-                'url' => $url,
             ];
 
             $result[] = array_merge($item, $this->getPriceByProductId($product->product_id));
@@ -191,36 +215,20 @@ class GeneratorService extends Service
      */
     protected function getPriceByProductId(int $id): array
     {
-        $pricesById = Store::groupsIds();
+        $pricesById = StoreContext::groupsIds();
 
         $result = [];
         foreach ($pricesById as $value) {
             $result[$value] = 0.0;
         }
 
-        /** @var ProductDiscount[]|Collection $discounts */
-        $discounts = ProductDiscount::where('product_id', $id)->get();
+        $discounts = $this->productDiscountRepository->findByProductId($id);
         foreach ($discounts as $discount) {
             if (false === key_exists($discount->customer_group_id, $pricesById)) {
                 continue;
             }
 
             $result[$pricesById[$discount->customer_group_id]] = round($discount->price, 2);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param Collection $array
-     * @param string $column
-     * @return array
-     */
-    protected function getColumn(Collection $array, string $column): array
-    {
-        $result = [];
-        foreach ($array as $value) {
-            $result[] = $value->$column;
         }
 
         return $result;

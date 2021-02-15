@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Exceptions\FileUploaderException;
 use App\Helper\FileUploader;
 use App\Helper\PDFGenerator;
-use App\Helper\Store;
+use App\Helper\StoreContext;
 use App\Services\GeneratorService;
 use Illuminate\Console\Command;
 use Mpdf\MpdfException;
@@ -42,7 +42,7 @@ class GeneratePDFCommand extends Command
         $generatorService->init();
         $data = $generatorService->getData();
 
-        foreach (Store::groupsIds() as $groupId => $_) {
+        foreach (StoreContext::groupsIds() as $groupId => $_) {
             $generator->generateAndSave($data, $groupId);
             $uploader->send(
                 storage_path("app/{$groupId}.pdf"),

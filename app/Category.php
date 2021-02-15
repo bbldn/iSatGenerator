@@ -55,6 +55,8 @@ class Category extends Model
 
     public const pageGroupLinks = 'page_group_links';
 
+    public const categoryDescription = 'categoryDescription';
+
     /** @var bool */
     public $timestamps = false;
 
